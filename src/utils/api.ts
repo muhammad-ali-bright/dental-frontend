@@ -4,7 +4,9 @@ import { User, Patient, Appointment } from '../types';
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { firebaseAuth } from '../firebase/firebase';
 
-const API_URL = "https://dental-backend-y8kz.onrender.com/api";
+// const API_URL = "https://dental-backend-y8kz.onrender.com/api";
+
+const API_URL = "https://dental-backend-1.onrender.com/api"; // Use your actual API URL here
 
 export const API = axios.create({
     baseURL: API_URL,
