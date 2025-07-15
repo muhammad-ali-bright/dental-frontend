@@ -64,7 +64,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     role: string
   ): Promise<{ success: boolean; error?: string }> => {
     try {
-      debugger
       const cred = await createUserWithEmailAndPassword(firebaseAuth, email, password)
   
       const token = await cred.user.getIdToken()

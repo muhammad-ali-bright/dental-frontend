@@ -4,9 +4,10 @@ import { User, Patient, Appointment } from '../types';
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { firebaseAuth } from '../firebase/firebase';
 
-// const API_URL = "https://dental-backend-y8kz.onrender.com/api";
+// const API_URL = "https://dental-backend-1.onrender.com/api";
 
-const API_URL = "https://dental-backend-1.onrender.com/api"; // Use your actual API URL here
+// const API_URL = "http://localhost:5001/api"; // Use your actual API URL here
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api'; // Use environment variable or fallback to local development
 
 export const API = axios.create({
     baseURL: API_URL,
