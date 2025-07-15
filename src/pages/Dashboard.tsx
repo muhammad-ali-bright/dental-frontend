@@ -1,11 +1,13 @@
 import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { statusColorClasses } from '../utils/status';
 import { useApp } from '../context/AppContext';
 import { format, isAfter, isBefore, addDays } from 'date-fns';
-import { 
-  Users, 
-  Calendar, 
-  DollarSign, 
-  CheckCircle, 
+import {
+  Users,
+  Calendar,
+  DollarSign,
+  CheckCircle,
   Clock,
   TrendingUp,
   Activity,
@@ -13,6 +15,7 @@ import {
 } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   const { patients, appointments } = useApp();
 
   const dashboardData = useMemo(() => {
@@ -35,6 +38,7 @@ const Dashboard: React.FC = () => {
       return appointmentDate.toDateString() === today.toDateString();
     });
 
+
     // This week's appointments
     const weeklyAppointments = appointments.filter(appointment => {
       const appointmentDate = new Date(appointment.appointmentDate);
@@ -46,28 +50,13 @@ const Dashboard: React.FC = () => {
     const pendingTreatments = appointments.filter(appointment => appointment.status === 'Scheduled').length;
     const inProgressTreatments = appointments.filter(appointment => appointment.status === 'In Progress').length;
 
-    // Revenue calculation
-    const totalRevenue = appointments
-      .filter(appointment => appointment.cost && appointment.status === 'Completed')
-      .reduce((sum, appointment) => sum + (appointment.cost || 0), 0);
-
-    const monthlyRevenue = appointments
-      .filter(appointment => {
-        if (!appointment.cost || appointment.status !== 'Completed') return false;
-        const appointmentDate = new Date(appointment.appointmentDate);
-        const currentMonth = now.getMonth();
-        const currentYear = now.getFullYear();
-        return appointmentDate.getMonth() === currentMonth && appointmentDate.getFullYear() === currentYear;
-      })
-      .reduce((sum, appointment) => sum + (appointment.cost || 0), 0);
-
     // Top patients (by number of appointments)
     const patientAppointmentCount = patients.map(patient => {
       const appointmentCount = appointments.filter(appointment => appointment.patientId === patient.id).length;
       return { ...patient, appointmentCount };
     })
-    .sort((a, b) => b.appointmentCount - a.appointmentCount)
-    .slice(0, 5);
+      .sort((a, b) => b.appointmentCount - a.appointmentCount)
+      .slice(0, 5);
 
     return {
       upcomingAppointments,
@@ -76,8 +65,6 @@ const Dashboard: React.FC = () => {
       completedTreatments,
       pendingTreatments,
       inProgressTreatments,
-      totalRevenue,
-      monthlyRevenue,
       patientAppointmentCount
     };
   }, [patients, appointments]);
@@ -250,27 +237,33 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* This Week's Schedule */}
-      {dashboardData.weeklyAppointments.length > 0 && (
+      {dashboardData.todayAppointments.length > 0 && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="p-6 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 flex items-center">
               <AlertCircle className="mr-2" size={20} />
-              This Week's Schedule
+              This Today's Schedule
             </h3>
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {dashboardData.weeklyAppointments.map((appointment) => {
+              {dashboardData.todayAppointments.map((appointment) => {
                 const patient = patients.find(p => p.id === appointment.patientId);
                 return (
-                  <div key={appointment.id} className="p-4 border border-gray-200 rounded-lg">
+                  <div
+                    key={appointment.id}
+                    className="p-4 border border-gray-200 rounded-lg cursor-pointer hover:shadow-md transition-shadow"
+                    onClick={() => navigate('/appointments', { state: { editId: appointment.id } })}
+                  >
                     <div className="flex justify-between items-start mb-2">
                       <h4 className="font-medium text-gray-900">{patient?.name}</h4>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        appointment.status === 'Scheduled' ? 'bg-blue-100 text-blue-800' :
-                        appointment.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-green-100 text-green-800'
-                      }`}>
+                      {/* … inside your map: */}
+                      <span
+                        className={`
+                        px-2 py-1 rounded-full text-xs font-medium
+                        ${statusColorClasses[appointment.status]}
+                      `}
+                      >
                         {appointment.status}
                       </span>
                     </div>

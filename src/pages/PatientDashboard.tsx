@@ -45,10 +45,6 @@ const PatientDashboard: React.FC = () => {
 
     const nextAppointment = upcomingAppointments[0];
 
-    const totalCost = patientAppointments
-      .filter(appointment => appointment.cost && appointment.status === 'Completed')
-      .reduce((sum, appointment) => sum + (appointment.cost || 0), 0);
-
     const completedTreatments = patientAppointments.filter(appointment => appointment.status === 'Completed').length;
 
     return {
@@ -57,7 +53,6 @@ const PatientDashboard: React.FC = () => {
       upcomingAppointments,
       pastAppointments,
       nextAppointment,
-      totalCost,
       completedTreatments
     };
   }, [user, patients, appointments]);
@@ -70,7 +65,7 @@ const PatientDashboard: React.FC = () => {
     );
   }
 
-  const { patient, upcomingAppointments, pastAppointments, nextAppointment, totalCost, completedTreatments } = patientData;
+  const { patient, upcomingAppointments, pastAppointments, nextAppointment, completedTreatments } = patientData;
 
   const StatCard: React.FC<{
     title: string;
@@ -170,12 +165,6 @@ const PatientDashboard: React.FC = () => {
           icon={CheckCircle}
           color="bg-green-500"
         />
-        <StatCard
-          title="Total Spent"
-          value={`$${totalCost}`}
-          icon={DollarSign}
-          color="bg-purple-500"
-        />
       </div>
 
       {/* Next Appointment */}
@@ -193,11 +182,6 @@ const PatientDashboard: React.FC = () => {
                 <p className="text-sm text-gray-500 mt-2">
                   {format(new Date(nextAppointment.appointmentDate), 'EEEE, MMMM d, yyyy h:mm a')}
                 </p>
-                {nextAppointment.comments && (
-                  <p className="text-sm text-gray-600 mt-2">
-                    <strong>Notes:</strong> {nextAppointment.comments}
-                  </p>
-                )}
               </div>
               <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                 nextAppointment.status === 'Scheduled' ? 'bg-blue-100 text-blue-800' :
@@ -241,11 +225,6 @@ const PatientDashboard: React.FC = () => {
                     <p className="text-sm text-gray-500">
                       {format(new Date(appointment.appointmentDate), 'MMM d, yyyy h:mm a')}
                     </p>
-                    {appointment.cost && (
-                      <p className="text-sm font-medium text-green-600 mt-2">
-                        Cost: ${appointment.cost}
-                      </p>
-                    )}
                   </div>
                 ))}
               </div>
@@ -279,41 +258,9 @@ const PatientDashboard: React.FC = () => {
                       </span>
                     </div>
                     <p className="text-sm text-gray-600 mb-2">{appointment.description}</p>
-                    {appointment.treatment && (
-                      <p className="text-sm text-gray-700 mb-2">
-                        <strong>Treatment:</strong> {appointment.treatment}
-                      </p>
-                    )}
                     <p className="text-sm text-gray-500 mb-2">
                       {format(new Date(appointment.appointmentDate), 'MMM d, yyyy')}
                     </p>
-                    {appointment.cost && (
-                      <p className="text-sm font-medium text-green-600 mb-2">
-                        Cost: ${appointment.cost}
-                      </p>
-                    )}
-                    {appointment.files && appointment.files.length > 0 && (
-                      <div className="mt-3">
-                        <p className="text-xs text-gray-500 mb-2">Attachments:</p>
-                        <div className="flex flex-wrap gap-2">
-                          {appointment.files.map((file, index) => (
-                            <button
-                              key={index}
-                              onClick={() => downloadFile(file)}
-                              className="flex items-center space-x-1 px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-xs hover:bg-blue-100 transition-colors"
-                            >
-                              <Download size={12} />
-                              <span>{file.name}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {appointment.nextDate && (
-                      <p className="text-sm text-blue-600 mt-2">
-                        <strong>Next visit:</strong> {format(new Date(appointment.nextDate), 'MMM d, yyyy')}
-                      </p>
-                    )}
                   </div>
                 ))}
               </div>

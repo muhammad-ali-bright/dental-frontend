@@ -8,19 +8,18 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, roles = [] }) => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
 
-  if (!isAuthenticated || !user) {
-    return <Navigate to="/login" replace />;
-  }
+  // if (loading) {
+  //   // still waiting for Firebase → show spinner or null
+  //   return null
+  // }
 
-  if (roles.length > 0 && !roles.includes(user.role)) {
-    // Redirect based on user role
-    const redirectPath = user.role === 'Student' ? '/dashboard' : '/patient-dashboard';
-    return <Navigate to={redirectPath} replace />;
-  }
+  // if (!loading) {
+  //   return null
+  // }
 
-  return <>{children}</>;
+  return <>{children}</>
 };
 
 export default ProtectedRoute;

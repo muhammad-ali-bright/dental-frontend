@@ -10,7 +10,7 @@ import {
   initializeStorage
 } from '../utils/storage';
 
-import { getPatientsFromAPI, savePatient, updatePatientFromAPI, deletePatientFromAPI } from "../utils/api";
+import { getPatientsFromAPI, savePatient, updatePatientFromAPI, deletePatientFromAPI, addAppointmentFromAPI } from "../utils/api";
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -72,6 +72,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       ...appointmentData,
       id: generateId()
     };
+    const result = addAppointmentFromAPI(newAppointment);
     const updatedAppointments = [...appointments, newAppointment];
     setAppointments(updatedAppointments);
     saveAppointments(updatedAppointments);

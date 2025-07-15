@@ -120,13 +120,6 @@ const MyAppointments: React.FC = () => {
         </div>
       )}
 
-      {appointment.cost && (
-        <div className="flex items-center text-green-600 mb-4">
-          <DollarSign size={16} className="mr-1" />
-          <span className="font-medium">${appointment.cost}</span>
-        </div>
-      )}
-
       {appointment.files && appointment.files.length > 0 && (
         <div className="mb-4">
           <p className="text-sm font-medium text-gray-700 mb-2">Attachments:</p>
@@ -191,23 +184,6 @@ const MyAppointments: React.FC = () => {
             </div>
             <div className="p-3 rounded-full bg-green-100">
               <CheckCircle size={24} className="text-green-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Spent</p>
-              <p className="text-2xl font-bold text-gray-900">
-                ${past
-                  .filter(a => a.cost && a.status === 'Completed')
-                  .reduce((sum, a) => sum + (a.cost || 0), 0)
-                }
-              </p>
-            </div>
-            <div className="p-3 rounded-full bg-purple-100">
-              <DollarSign size={24} className="text-purple-600" />
             </div>
           </div>
         </div>

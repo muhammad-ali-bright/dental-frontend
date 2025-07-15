@@ -2,9 +2,6 @@ import { User, Patient, Appointment } from '../types';
 
 // Mock data
 export const mockUsers: User[] = [
-  { id: "1", role: "Student", email: "admin@entnt.in", password: "admin123" },
-  { id: "2", role: "Professor", email: "john@entnt.in", password: "patient123", patientId: "p1" },
-  { id: "3", role: "Professor", email: "jane@entnt.in", password: "patient123", patientId: "p2" }
 ];
 
 export const mockPatients: Patient[] = [
@@ -35,41 +32,30 @@ export const mockPatients: Patient[] = [
 ];
 
 export const mockAppointments: Appointment[] = [
-  {
-    id: "i1",
-    patientId: "p1",
-    title: "Toothache",
-    description: "Upper molar pain",
-    comments: "Sensitive to cold",
-    appointmentDate: "2025-07-10T10:00:00",
-    cost: 80,
-    treatment: "Root canal treatment",
-    status: "Completed",
-    nextDate: "2025-08-10T10:00:00",
-    files: []
-  },
-  {
-    id: "i2",
-    patientId: "p2",
-    title: "Dental Cleaning",
-    description: "Regular dental cleaning",
-    comments: "Good oral hygiene",
-    appointmentDate: "2025-07-12T14:00:00",
-    cost: 120,
-    treatment: "Professional cleaning",
-    status: "Scheduled",
-    files: []
-  },
-  {
-    id: "i3",
-    patientId: "p1",
-    title: "Follow-up",
-    description: "Post-treatment checkup",
-    comments: "Monitor healing progress",
-    appointmentDate: "2025-07-15T09:00:00",
-    status: "Scheduled",
-    files: []
-  }
+  // {
+  //   id: "i1",
+  //   patientId: "p1",
+  //   title: "Toothache",
+  //   description: "Upper molar pain",
+  //   appointmentDate: "2025-07-10T10:00:00",
+  //   status: "Completed",
+  // },
+  // {
+  //   id: "i2",
+  //   patientId: "p2",
+  //   title: "Dental Cleaning",
+  //   description: "Regular dental cleaning",
+  //   appointmentDate: "2025-07-12T14:00:00",
+  //   status: "Scheduled",
+  // },
+  // {
+  //   id: "i3",
+  //   patientId: "p1",
+  //   title: "Follow-up",
+  //   description: "Post-treatment checkup",
+  //   appointmentDate: "2025-07-15T09:00:00",
+  //   status: "Scheduled",
+  // }
 ];
 
 const STORAGE_KEYS = {

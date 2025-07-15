@@ -16,6 +16,10 @@ code {
     monospace;
 }
 
+button, input {
+  cursor: pointer;
+}
+
 /* Custom animations for login page */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
@@ -43,3 +47,4 @@ code {
 .backdrop-blur-sm {
   backdrop-filter: blur(4px);
 }
+

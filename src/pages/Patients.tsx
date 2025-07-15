@@ -97,11 +97,8 @@ const Patients: React.FC = () => {
     const upcoming = patientAppointments.filter(appointment =>
       appointment.status === 'Scheduled' && new Date(appointment.appointmentDate) > new Date()
     ).length;
-    const totalSpent = patientAppointments
-      .filter(appointment => appointment.cost && appointment.status === 'Completed')
-      .reduce((sum, appointment) => sum + (appointment.cost || 0), 0);
 
-    return { completed, upcoming, totalSpent };
+    return { completed, upcoming };
   };
 
   return (

@@ -2,7 +2,8 @@ export interface User {
   id: string;
   role: string;
   email: string;
-  password: string;
+  firstName?: string;
+  lastName?: string;
   patientId?: string;
 }
 
@@ -27,21 +28,36 @@ export interface Appointment {
   patientId: string;
   title: string;
   description: string;
-  comments: string;
+  // comments: string;
   appointmentDate: string;
-  cost?: number;
-  treatment?: string;
+  // cost?: number;
+  // treatment?: string;
   status: 'Scheduled' | 'In Progress' | 'Completed' | 'Cancelled';
-  nextDate?: string;
-  files: FileAttachment[];
+  // nextDate?: string;
+  // files: FileAttachment[];
 }
 
 export interface AuthContextType {
-  user: User | null;
-  login: (email: string, password: string) => Promise<object>;
-  logout: () => void;
-  register: (email: string, password: string, role: string) => Promise<object>; // Change this to Promise<boolean>
-  isAuthenticated: boolean;
+  user: User | null
+
+  // we don’t inspect the UserCredential on the front-end,
+  // so just return void on success, throw on failure
+  login: (email: string, password: string) => Promise<void>
+
+  // we don’t need to await signOut, and it never fails in practice
+  logout: () => void
+
+  // true on success, false on any error
+  register: (
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string,
+    role: string
+  ) => Promise<{ success: boolean; error?: string }>
+
+  isAuthenticated: boolean
+  loading: boolean; // ← new
 }
 
 export interface AppContextType {
