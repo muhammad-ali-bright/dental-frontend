@@ -343,7 +343,7 @@ const Patients: React.FC = () => {
         </div>
       )}
 
-      <Pagination totalPages={totalPages} currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      {patients.length > 0 && <Pagination totalPages={totalPages} currentPage={currentPage} setCurrentPage={setCurrentPage} />}
     </div>
 
   );

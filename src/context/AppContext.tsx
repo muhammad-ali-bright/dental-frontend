@@ -32,7 +32,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const patientNames = await getPatientNamesFromAPI();
       setPatientNames(patientNames);
 
-      initializeStorage();
+      // initializeStorage();
       // setAppointments(getAppointments());
     };
     fetchData();
