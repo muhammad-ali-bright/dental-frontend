@@ -27,8 +27,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // desktop collapse open/closed
   const [collapsed, setCollapsed] = React.useState(false)
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
     navigate('/login')
   }
 
@@ -46,7 +46,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const isActive = (p: string) => location.pathname === p
 
   return (
-    <div className="h-screen flex flex-col lg:flex-row bg-gray-50 overflow-hidden">
+    user && <div className="h-screen flex flex-col lg:flex-row bg-gray-50 overflow-hidden">
       {/* Mobile header with contrasting toggle */}
       <header className="lg:hidden w-full bg-primary-600 shadow px-4 py-3 flex justify-between items-center">
         <h1 className="text-xl font-bold text-white">DentalCare</h1>
@@ -94,7 +94,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </div>
               {!collapsed && (
                 <div>
-                  <p className="text-sm font-medium text-gray-900">{user?.email}</p>
+                  <p className="text-sm font-medium text-gray-900">{user?.firstName}{user?.lastName}</p>
                   <p className="text-xs text-gray-500">{user?.role}</p>
                 </div>
               )}

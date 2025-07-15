@@ -106,7 +106,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Stats Grid */}
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Total Patients"
           value={patients.length}
@@ -121,7 +121,7 @@ const Dashboard: React.FC = () => {
         />
         <StatCard
           title="Monthly Revenue"
-          value={`$${dashboardData.monthlyRevenue}`}
+          value={`$${15}`}
           icon={DollarSign}
           color="bg-yellow-500"
         />
@@ -131,10 +131,10 @@ const Dashboard: React.FC = () => {
           icon={CheckCircle}
           color="bg-purple-500"
         />
-      </div> */}
+      </div>
 
       {/* Treatment Status */}
-      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard
           title="Pending Treatments"
           value={dashboardData.pendingTreatments}
@@ -149,100 +149,19 @@ const Dashboard: React.FC = () => {
         />
         <StatCard
           title="Total Revenue"
-          value={`$${dashboardData.totalRevenue}`}
+          value={`$${80}`}
           icon={TrendingUp}
           color="bg-emerald-500"
           subtitle="All time"
         />
-      </div> */}
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Upcoming Appointments */}
-        {/* <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-              <Calendar className="mr-2" size={20} />
-              Next 10 Appointments
-            </h3>
-          </div>
-          <div className="p-6">
-            {dashboardData.upcomingAppointments.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">No upcoming appointments</p>
-            ) : (
-              <div className="space-y-4">
-                {dashboardData.upcomingAppointments.map((appointment) => {
-                  const patient = patients.find(p => p.id === appointment.patientId);
-                  return (
-                    <div key={appointment.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium text-gray-900">{patient?.name}</p>
-                        <p className="text-sm text-gray-600">{appointment.title}</p>
-                        <p className="text-xs text-gray-500">
-                          {format(new Date(appointment.appointmentDate), 'MMM d, yyyy h:mm a')}
-                        </p>
-                      </div>
-                      <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        appointment.status === 'Scheduled' ? 'bg-blue-100 text-blue-800' :
-                        appointment.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' :
-                        appointment.status === 'Completed' ? 'bg-green-100 text-green-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
-                        {appointment.status}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div> */}
-
-        {/* Top Patients */}
-        {/* <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-              <Users className="mr-2" size={20} />
-              Top Patients
-            </h3>
-          </div>
-          <div className="p-6">
-            {dashboardData.patientAppointmentCount.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">No patients found</p>
-            ) : (
-              <div className="space-y-4">
-                {dashboardData.patientAppointmentCount.map((patient, index) => (
-                  <div key={patient.id} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-medium text-primary-600">
-                          {index + 1}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">{patient.name}</p>
-                        <p className="text-sm text-gray-600">{patient.email}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">
-                        {patient.appointmentCount} appointments
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div> */}
       </div>
-
       {/* This Week's Schedule */}
       {dashboardData.todayAppointments.length > 0 && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="p-6 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 flex items-center">
               <AlertCircle className="mr-2" size={20} />
-              This Today's Schedule
+              Today's Schedule
             </h3>
           </div>
           <div className="p-6">
@@ -283,6 +202,86 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       )}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Upcoming Appointments */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="p-6 border-b border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+              <Calendar className="mr-2" size={20} />
+              Next 10 Appointments
+            </h3>
+          </div>
+          <div className="p-6">
+            {dashboardData.upcomingAppointments.length === 0 ? (
+              <p className="text-gray-500 text-center py-4">No upcoming appointments</p>
+            ) : (
+              <div className="space-y-4">
+                {dashboardData.upcomingAppointments.map((appointment) => {
+                  const patient = patients.find(p => p.id === appointment.patientId);
+                  return (
+                    <div key={appointment.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium text-gray-900">{patient?.name}</p>
+                        <p className="text-sm text-gray-600">{appointment.title}</p>
+                        <p className="text-xs text-gray-500">
+                          {format(new Date(appointment.appointmentDate), 'MMM d, yyyy h:mm a')}
+                        </p>
+                      </div>
+                      <div className={`px-2 py-1 rounded-full text-xs font-medium ${appointment.status === 'Scheduled' ? 'bg-blue-100 text-blue-800' :
+                          appointment.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' :
+                            appointment.status === 'Completed' ? 'bg-green-100 text-green-800' :
+                              'bg-red-100 text-red-800'
+                        }`}>
+                        {appointment.status}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Top Patients */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="p-6 border-b border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+              <Users className="mr-2" size={20} />
+              Top Patients
+            </h3>
+          </div>
+          <div className="p-6">
+            {dashboardData.patientAppointmentCount.length === 0 ? (
+              <p className="text-gray-500 text-center py-4">No patients found</p>
+            ) : (
+              <div className="space-y-4">
+                {dashboardData.patientAppointmentCount.map((patient, index) => (
+                  <div key={patient.id} className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-medium text-primary-600">
+                          {index + 1}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">{patient.name}</p>
+                        <p className="text-sm text-gray-600">{patient.email}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-gray-900">
+                        {patient.appointmentCount} appointments
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+
     </div>
   );
 };

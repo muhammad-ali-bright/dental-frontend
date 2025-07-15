@@ -41,12 +41,29 @@ export const fetchMeAPI = (): Promise<AxiosResponse> => {
 }
 
 // Patient operations - replace with API
-export const getPatientsFromAPI = async () => {
+export const getPatientsFromAPI = async (startIdx: number, endIdx: number, searchTerm: string, sort: string) => {
     try {
-        const response = await API.get('/patients');
+        const response = await API.get('/patients', {
+            params: {
+                startIdx,
+                endIdx,
+                searchTerm,
+                sort
+            }
+        });
         return response.data;
     } catch (error) {
         console.error('Error fetching patients:', error);
+        return []; // return empty array in case of an error
+    }
+};
+
+export const getPatientNamesFromAPI = async (): Promise<Patient[]> => {
+    try {
+        const response = await API.get('/patients/names');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching patient names:', error);
         return []; // return empty array in case of an error
     }
 };
@@ -109,6 +126,23 @@ export const deletePatientFromAPI = async (id: string) => {
     }
 };
 
+export const getAppointmentsFromApi = async (startIdx: number, endIdx: number, searchTerm: string, sort: string) => {
+    try {
+        const response = await API.get('/appointments', {
+            params: {
+                startIdx,
+                endIdx,
+                searchTerm,
+                sort
+            }
+        });
+        return response.data; // Return the appointments data
+    } catch (error) {
+        console.error('Error fetching appointments:', error);
+        throw error; // Pass the error to be handled by the caller  
+    }
+}
+
 export const addAppointmentFromAPI = async (appointment: Appointment) => {
     try {
         console.log('Adding appointment:', appointment);
@@ -119,3 +153,24 @@ export const addAppointmentFromAPI = async (appointment: Appointment) => {
         throw error; // Pass the error to be handled by the caller
     }
 }
+
+export const updateAppointmentFromAPI = async (id: string, appointmentData: Appointment) => {
+    try {
+        const response = await API.put(`/appointments/${id}`, appointmentData);
+        return response.data; // Return the updated appointment data
+    } catch (error) {
+        console.error('Error updating appointment:', error);
+        throw error; // Pass the error to be handled by the caller
+    }
+}
+
+
+export const deleteAppointmentFromAPI = async (id: string) => {
+    try {
+        const response = await API.delete(`/appointments/${id}`);
+        return response.data; // Return the deleted appointment data
+    } catch (error) {
+        console.error('Error deleting appointment:', error);
+        throw error; // Pass the error to be handled by the caller
+    }
+};  

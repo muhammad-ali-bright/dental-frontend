@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import {
   Plus,
@@ -15,8 +15,10 @@ import {
 import { Patient } from '../types';
 import { Toaster, toast } from 'react-hot-toast';
 
+import Pagination from '../components/Pagination';
+
 const Patients: React.FC = () => {
-  const { patients, appointments, addPatient, updatePatient, deletePatient } = useApp();
+  const { patients, getPatients, totalCountPatients, appointments, addPatient, updatePatient, deletePatient } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
@@ -28,18 +30,23 @@ const Patients: React.FC = () => {
     email: ''
   });
 
-  const filteredPatients = patients.filter(patient =>
-    patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    patient.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    patient.contact.includes(searchTerm)
-  );
+  const [currentPage, setCurrentPage] = useState(1)
+  const patientsPerPage = 6  // or whatever you like
+  const sort = "date"
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const startIdx = (currentPage - 1) * patientsPerPage
+  const endIdx = startIdx + patientsPerPage
+
+  const totalPages = Math.ceil(totalCountPatients / patientsPerPage)
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (editingPatient) {
-      updatePatient(editingPatient.id, formData);
+      await updatePatient(editingPatient.id, formData);
+      getPatients(startIdx, endIdx, searchTerm, sort);
     } else {
-      addPatient(formData);
+      await addPatient(formData);
+      getPatients(startIdx, endIdx, searchTerm, sort);
     }
     resetForm();
   };
@@ -73,6 +80,7 @@ const Patients: React.FC = () => {
     if (patientAppointments.length > 0) {
       if (window.confirm('This patient has appointments. Are you sure you want to delete this patient? All associated appointments will also be deleted.')) {
         const success = await deletePatient(patientId);
+        await getPatients(startIdx, endIdx, searchTerm, sort);
         if (success) {
           toast.success('Patient and associated appointments deleted successfully');
         } else {
@@ -82,6 +90,7 @@ const Patients: React.FC = () => {
     } else {
       if (window.confirm('Are you sure you want to delete this patient?')) {
         const success = await deletePatient(patientId);
+        await getPatients(startIdx, endIdx, searchTerm, sort);
         if (success) {
           toast.success('Patient deleted successfully');
         } else {
@@ -100,6 +109,10 @@ const Patients: React.FC = () => {
 
     return { completed, upcoming };
   };
+
+  useEffect(() => {
+    getPatients(startIdx, endIdx, searchTerm, sort);
+  }, [currentPage, searchTerm]);
 
   return (
     <div className="space-y-6">
@@ -135,7 +148,7 @@ const Patients: React.FC = () => {
 
       {/* Patients Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredPatients.map((patient) => {
+        {patients.map((patient) => {
           const stats = getPatientStats(patient.id);
           return (
             <div key={patient.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -218,7 +231,7 @@ const Patients: React.FC = () => {
         })}
       </div>
 
-      {filteredPatients.length === 0 && (
+      {patients.length === 0 && (
         <div className="text-center py-12">
           <User size={48} className="mx-auto text-gray-400 mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">No patients found</h3>
@@ -329,7 +342,10 @@ const Patients: React.FC = () => {
           </div>
         </div>
       )}
+
+      <Pagination totalPages={totalPages} currentPage={currentPage} setCurrentPage={setCurrentPage} />
     </div>
+
   );
 };
 

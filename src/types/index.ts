@@ -16,6 +16,11 @@ export interface Patient {
   email?: string;
 }
 
+export interface PatientName {
+  id: string;
+  name: string
+}
+
 export interface FileAttachment {
   name: string;
   url: string;
@@ -62,11 +67,16 @@ export interface AuthContextType {
 
 export interface AppContextType {
   patients: Patient[];
+  patientNames: PatientName[];
+  totalCountPatients: number;
+  getPatients: (startIdx: number, endIdx: number, searchTerm: string, sort: string) => void;
   appointments: Appointment[];
   addPatient: (patient: Omit<Patient, 'id'>) => void;
   updatePatient: (id: string, patient: Partial<Patient>) => void;
   deletePatient: (id: string) => Boolean | Promise<Boolean>;
-  addAppointment: (appointment: Omit<Appointment, 'id'>) => void;
-  updateAppointment: (id: string, appointment: Partial<Appointment>) => void;
+  getAppointments: (startIdx: number, endIdx: number, searchTerm: string, sort: string) => void;
+  addAppointment: (appointment: Appointment) => void;
+  updateAppointment: (id: string, appointment: Appointment) => void;
   deleteAppointment: (id: string) => void;
+  totalCountAppointments: number;
 }

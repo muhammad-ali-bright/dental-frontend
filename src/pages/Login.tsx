@@ -28,7 +28,6 @@ const Login: React.FC = () => {
     setLoading(true)
     try {
       await login(email, password)
-      toast.success('Logged in successfully!')
     } catch {
       toast.error('Invalid email or password')
     } finally {

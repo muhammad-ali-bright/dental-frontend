@@ -33,13 +33,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.log('Fetched profile:', resp)
 
           setUser({ ...resp.data, email: fbUser.email! })
-          // setUser({
-          //   id: fbUser.uid,
-          //   email: fbUser.email || '',
-          //   role: 'Student', // Default role, adjust as needed
-          //   firstName: '',
-          //   lastName: ''  
-          // })
           setIsAuthenticated(true)
         } catch (err) {
           console.error('Failed to fetch profile:', err)
@@ -103,8 +96,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await signInWithEmailAndPassword(firebaseAuth, email, password)
   }
 
-  const logout = (): void => {
-    signOut(firebaseAuth)
+  const logout = async () => {
+    await signOut(firebaseAuth)
   }
 
   const value: AuthContextType = {

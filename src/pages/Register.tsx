@@ -5,22 +5,36 @@ import { Heart, Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import toast, { Toaster } from 'react-hot-toast'
 
+const validatePassword = (pw: string) => {
+    // at least 8 chars, one lowercase, one uppercase, one digit, one symbol
+    const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).{8,}$/
+    return re.test(pw)
+}
+
 const Register: React.FC = () => {
-    const [firstName, setFirstName] = useState<string>('')
-    const [lastName, setLastName] = useState<string>('')
-    const [email, setEmail] = useState<string>('')
-    const [password, setPassword] = useState<string>('')
-    const [passwordConfirm, setPasswordConfirm] = useState<string>('')
-    const [showPassword, setShowPassword] = useState<boolean>(false)
-    const [showPasswordConfirm, setShowPasswordConfirm] = useState<boolean>(false)
+    const [firstName, setFirstName] = useState('')
+    const [lastName, setLastName] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [passwordConfirm, setPasswordConfirm] = useState('')
+    const [showPassword, setShowPassword] = useState(false)
+    const [showPasswordConfirm, setShowPasswordConfirm] = useState(false)
     const [role, setRole] = useState<'Student' | 'Professor'>('Student')
-    const [loading, setLoading] = useState<boolean>(false)
+    const [loading, setLoading] = useState(false)
 
     const { register } = useAuth()
     const navigate = useNavigate()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        if (!validatePassword(password)) {
+            toast.error(
+                'Password must be at least 8 characters and include uppercase, lowercase, a number & a symbol.'
+            )
+            return
+        }
+
         if (password !== passwordConfirm) {
             toast.error('Passwords do not match')
             return
@@ -47,6 +61,7 @@ const Register: React.FC = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center p-4 relative overflow-hidden">
             <Toaster position="top-center" />
+            {/* background blobs */}
             <div className="absolute inset-0 overflow-hidden">
                 <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse" />
                 <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse animation-delay-2000" />
@@ -119,6 +134,8 @@ const Register: React.FC = () => {
                             required
                             value={password}
                             onChange={e => setPassword(e.target.value)}
+                            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).{8,}$"
+                            title="Must be 8+ chars, include upper & lower case, a number & a symbol."
                             placeholder="Enter your password"
                             className="block w-full pl-12 pr-12 py-4 border border-gray-300 rounded-xl bg-gray-50 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200"
                         />

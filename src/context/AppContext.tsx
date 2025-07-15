@@ -1,16 +1,14 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Patient, Appointment, AppContextType } from '../types';
+import { Patient, PatientName, Appointment, AppContextType } from '../types';
 import { useAuth } from '../context/AuthContext';
 import {
-  getPatients,
-  savePatients,
-  getAppointments,
+  // getAppointments,
   saveAppointments,
   generateId,
   initializeStorage
 } from '../utils/storage';
 
-import { getPatientsFromAPI, savePatient, updatePatientFromAPI, deletePatientFromAPI, addAppointmentFromAPI } from "../utils/api";
+import { getPatientsFromAPI, getPatientNamesFromAPI, savePatient, updatePatientFromAPI, deletePatientFromAPI, addAppointmentFromAPI, updateAppointmentFromAPI, getAppointmentsFromApi, deleteAppointmentFromAPI } from "../utils/api";
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -24,18 +22,27 @@ export const useApp = () => {
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [patientNames, setPatientNames] = useState<PatientName[]>([]);
+  const [totalCountPatients, setTotalCountPatients] = useState<number>(0);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [totalCountAppointments, setTotalCountAppointments] = useState<number>(0);
 
   useEffect(() => {
-      const fetchData = async () => {
-        const patients = await getPatientsFromAPI();
-        initializeStorage();
-        setPatients(patients);
-        setAppointments(getAppointments());
-      };
-      fetchData();
+    const fetchData = async () => {
+      const patientNames = await getPatientNamesFromAPI();
+      setPatientNames(patientNames);
+
+      initializeStorage();
+      // setAppointments(getAppointments());
+    };
+    fetchData();
   }, []);
 
+  const getPatients = async (startIdx: number, endIdx: number, searchTerm: string, sort: string) => {
+    const { patients, totalCount } = await getPatientsFromAPI(startIdx, endIdx, searchTerm, sort);
+    setPatients(patients);
+    setTotalCountPatients(totalCount);
+  };
 
   const addPatient = async (patientData: Omit<Patient, 'id'>) => {
     let newPatient: Patient = {
@@ -43,61 +50,52 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       id: generateId()
     };
 
-    const response = await savePatient(newPatient);
-    const updatedPatients = [...patients, response.data];
-    setPatients(updatedPatients);
+    await savePatient(newPatient);
   };
 
   const updatePatient = async (id: string, patientData: Partial<Patient>) => {
-    const updatePatient = await updatePatientFromAPI(id, patientData);
-    const updatedPatients = patients.map(patient =>
-      patient.id === id ? { ...patient, ...updatePatient } : patient
-    );
-    setPatients(updatedPatients);
+    await updatePatientFromAPI(id, patientData);
   };
 
   const deletePatient = async (id: string): Promise<Boolean> => {
     try {
       await deletePatientFromAPI(id);
-      const updatedPatients = patients.filter(patient => patient.id !== id);
-      setPatients(updatedPatients);
       return true;
     } catch (error) {
       return false; // Handle error appropriately
     }
   };
 
-  const addAppointment = (appointmentData: Omit<Appointment, 'id'>) => {
-    const newAppointment: Appointment = {
-      ...appointmentData,
-      id: generateId()
-    };
-    const result = addAppointmentFromAPI(newAppointment);
-    const updatedAppointments = [...appointments, newAppointment];
-    setAppointments(updatedAppointments);
-    saveAppointments(updatedAppointments);
+  const getAppointments = async (startIdx: number, endIdx: number, searchTerm: string, sort: string) => {
+    const { appointments, totalCount } = await getAppointmentsFromApi(startIdx, endIdx, searchTerm, sort);
+    setAppointments(appointments);
+    setTotalCountAppointments(totalCount);
+  }
+
+  const addAppointment = async (appointmentData: Appointment) => {
+    const newAppointment = appointmentData;
+    await addAppointmentFromAPI(newAppointment);
   };
 
-  const updateAppointment = (id: string, appointmentData: Partial<Appointment>) => {
-    const updatedAppointments = appointments.map(appointment =>
-      appointment.id === id ? { ...appointment, ...appointmentData } : appointment
-    );
-    setAppointments(updatedAppointments);
-    saveAppointments(updatedAppointments);
+  const updateAppointment = async (id: string, appointmentData: Appointment) => {
+    await updateAppointmentFromAPI(id, appointmentData)
   };
 
-  const deleteAppointment = (id: string) => {
-    const updatedAppointments = appointments.filter(appointment => appointment.id !== id);
-    setAppointments(updatedAppointments);
-    saveAppointments(updatedAppointments);
+  const deleteAppointment = async (id: string) => {
+    await deleteAppointmentFromAPI(id);
   };
 
   const value: AppContextType = {
     patients,
+    patientNames,
+    totalCountPatients,
+    getPatients,
     appointments,
     addPatient,
     updatePatient,
     deletePatient,
+    totalCountAppointments,
+    getAppointments,
     addAppointment,
     updateAppointment,
     deleteAppointment

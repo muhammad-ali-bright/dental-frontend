@@ -15,15 +15,24 @@ import {
   XCircle,
   X as CloseIcon
 } from 'lucide-react';
-import { Appointment, FileAttachment } from '../types';
+import { Appointment } from '../types';
 import { format } from 'date-fns';
-// import { convertFileToBase64 } from '../utils/storage'; // still here if you need file uploads
+
+import Pagination from '../components/Pagination'; // Make sure this exists
 
 const Appointments: React.FC = () => {
-  const { patients, appointments, addAppointment, updateAppointment, deleteAppointment } = useApp();
+  const { patientNames, appointments, totalCountAppointments ,getAppointments, addAppointment, updateAppointment, deleteAppointment } = useApp();
   const location = useLocation();
   const { editId } = (location.state ?? {}) as { editId?: string };
   const navigate = useNavigate();
+
+  const appointmentsPerPage = 6;
+  const [currentPage, setCurrentPage] = useState(1);
+  const sort = "" //temporary
+
+  const startIdx = (currentPage - 1) * appointmentsPerPage;
+  const endIdx = startIdx + appointmentsPerPage;
+
 
   // form + modal state
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,6 +40,7 @@ const Appointments: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
   const [formData, setFormData] = useState({
+    id: '',
     patientId: '',
     title: '',
     description: '',
@@ -62,6 +72,7 @@ const Appointments: React.FC = () => {
     const next = statusOrder[(idx + 1) % statusOrder.length];
 
     const updated = {
+      id: appt.id,
       patientId: appt.patientId,
       title: appt.title,
       description: appt.description,
@@ -94,6 +105,7 @@ const Appointments: React.FC = () => {
       if (appt) {
         setEditingAppointment(appt);
         setFormData({
+          id: appt.id,
           patientId: appt.patientId,
           title: appt.title,
           description: appt.description,
@@ -106,31 +118,39 @@ const Appointments: React.FC = () => {
     }
   }, [editId, appointments]);
 
-  // ── Filtering ───────────────────────────────────────────────────────────────
-  const filteredAppointments = appointments.filter(appt => {
-    const patient = patients.find(p => p.id === appt.patientId);
-    const matchesSearch =
-      patient?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      appt.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      appt.description.toLowerCase().includes(searchTerm.toLowerCase());
+  useEffect(() => {
+    getAppointments(startIdx, endIdx, searchTerm, sort);
+  }, [currentPage, searchTerm]);
 
-    const matchesStatus = statusFilter === 'All' || appt.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+
+  // ── Filtering ───────────────────────────────────────────────────────────────
+  // const filteredAppointments = appointments.filter(appt => {
+  //   const patient = patientNames.find(p => p.id === appt.patientId);
+  //   const matchesSearch =
+  //     patient?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     appt.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     appt.description.toLowerCase().includes(searchTerm.toLowerCase());
+
+  //   const matchesStatus = statusFilter === 'All' || appt.status === statusFilter;
+  //   return matchesSearch && matchesStatus;
+  // });
 
   // ── Form handlers ───────────────────────────────────────────────────────────
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (editingAppointment) {
-      updateAppointment(editingAppointment.id, formData);
+      await updateAppointment(editingAppointment.id, formData);
+      getAppointments(startIdx, endIdx, searchTerm, sort);
     } else {
-      addAppointment(formData);
+      await addAppointment(formData);
+      getAppointments(startIdx, endIdx, searchTerm, sort);
     }
     resetForm();
   };
 
   const resetForm = () => {
     setFormData({
+      id: '',
       patientId: '',
       title: '',
       description: '',
@@ -144,6 +164,7 @@ const Appointments: React.FC = () => {
   const handleEdit = (appt: Appointment) => {
     setEditingAppointment(appt);
     setFormData({
+      id: appt.id,
       patientId: appt.patientId,
       title: appt.title,
       description: appt.description,
@@ -156,6 +177,7 @@ const Appointments: React.FC = () => {
   const handleDelete = (id: string) => {
     if (window.confirm('Are you sure you want to delete this appointment?')) {
       deleteAppointment(id);
+      getAppointments(startIdx, endIdx, searchTerm, sort);
     }
   };
 
@@ -204,9 +226,9 @@ const Appointments: React.FC = () => {
       </div>
 
       {/* List */}
-      <div className="space-y-4">
-        {filteredAppointments.map(appt => {
-          const patient = patients.find(p => p.id === appt.patientId);
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {appointments.map(appt => {
+          const parentName = patientNames.find(p => p.id === appt.patientId);
           return (
             <div key={appt.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex items-start justify-between">
@@ -235,7 +257,7 @@ const Appointments: React.FC = () => {
                       <div className="flex items-center space-x-4 text-sm text-gray-600">
                         <div className="flex items-center space-x-1">
                           <User size={16} />
-                          <span>{patient?.name}</span>
+                          <span>{parentName?.name}</span>
                         </div>
                         <div className="flex items-center space-x-1">
                           <CalendarIcon size={16} />
@@ -273,7 +295,7 @@ const Appointments: React.FC = () => {
         })}
       </div>
 
-      {filteredAppointments.length === 0 && (
+      {/* {filteredAppointments.length === 0 && (
         <div className="text-center py-12">
           <CalendarIcon size={48} className="mx-auto text-gray-400 mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">No appointments found</h3>
@@ -283,7 +305,7 @@ const Appointments: React.FC = () => {
               : 'Add your first appointment to get started'}
           </p>
         </div>
-      )}
+      )} */}
 
       {/* Add / Edit Modal */}
       {showModal && (
@@ -309,7 +331,7 @@ const Appointments: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
                     <option value="">Select a patient</option>
-                    {patients.map(p => (
+                    {patientNames.map(p => (
                       <option key={p.id} value={p.id}>{p.name}</option>
                     ))}
                   </select>
@@ -381,6 +403,15 @@ const Appointments: React.FC = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Add inside the JSX */}
+      {appointments.length > 0 && appointmentsPerPage && (
+        <Pagination
+          totalPages={Math.ceil(totalCountAppointments / appointmentsPerPage)}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
       )}
     </div>
   );
