@@ -17,9 +17,13 @@ const Login: React.FC = () => {
   // Redirect once signed in
   useEffect(() => {
     if (isAuthenticated && user) {
-      const redirectPath =
-        user.role === 'Student' ? '/dashboard' : '/patient-dashboard'
-      navigate(redirectPath, { replace: true })
+      setLoading(false)
+      toast.success('Login Successfully');
+      setTimeout(() => {
+        const redirectPath =
+          user.role === 'Student' ? '/dashboard' : '/patient-dashboard'
+        navigate(redirectPath, { replace: true })
+      }, 1500);
     }
   }, [isAuthenticated, user, navigate])
 
@@ -31,7 +35,6 @@ const Login: React.FC = () => {
     } catch {
       toast.error('Invalid email or password')
     } finally {
-      setLoading(false)
     }
   }
 
