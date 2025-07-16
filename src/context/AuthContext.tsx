@@ -1,119 +1,150 @@
-// src/context/AuthContext.tsx
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onIdTokenChanged,
-  signOut
-} from 'firebase/auth'
-import { firebaseAuth } from '../firebase/firebase'
-import { FirebaseError } from 'firebase/app'
-import { API, registerAPI, fetchMeAPI } from '../utils/api'
-import { AuthContextType, User } from '../types'
+  signOut,
+  User as FirebaseUser,
+} from 'firebase/auth';
+import { FirebaseError } from 'firebase/app';
+import { firebaseAuth } from '../firebase/firebase';
+import { API } from '../utils/api/axios';
+import { registerAPI, fetchMeAPI } from '../utils/api/auth';
+import { AuthContextType, User } from '../types';
 
-export const AuthContext = createContext<AuthContextType | null>(null)
+type Role = 'Student' | 'Professor';
 
+export const AuthContext = createContext<AuthContextType | null>(null);
+
+// Helper: Save token to localStorage + Axios header
+const saveAuthToken = async (fbUser: FirebaseUser) => {
+  const token = await fbUser.getIdToken();
+  localStorage.setItem('token', token);
+  API.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+};
+
+// Helper: Clear token and reset auth state
+const clearAuthState = () => {
+  delete API.defaults.headers.common['Authorization'];
+  localStorage.removeItem('token');
+};
+
+// Provider
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null)
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
-  const [loading, setLoading]     = useState(true)       // ← new
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  // Listen for login/logout events from Firebase
   useEffect(() => {
     const unsubscribe = onIdTokenChanged(firebaseAuth, async fbUser => {
       if (fbUser) {
-        const token = await fbUser.getIdToken()
-       
-        localStorage.setItem('token', token)
-        API.defaults.headers.common['Authorization'] = `Bearer ${token}`
-
         try {
-         
-          const resp = await fetchMeAPI()
-         
-          console.log('Fetched profile:', resp)
+          await saveAuthToken(fbUser);
+          const resp = await fetchMeAPI();
 
-          setUser({ ...resp.data, email: fbUser.email! })
-          setIsAuthenticated(true)
+          setUser({ ...resp.data, email: fbUser.email! });
+          setIsAuthenticated(true);
         } catch (err) {
-          console.error('Failed to fetch profile:', err)
-          signOut(firebaseAuth)
+          console.error('Failed to fetch user profile:', err);
+          await signOut(firebaseAuth);
+          clearAuthState();
+          setUser(null);
+          setIsAuthenticated(false);
         }
       } else {
-        delete API.defaults.headers.common['Authorization']
-        localStorage.removeItem('token')
-        setUser(null)
-        setIsAuthenticated(false)
+        setUser(null);
+        setIsAuthenticated(false);
+        clearAuthState();
       }
-    })
 
-    return unsubscribe
-  }, [])
+      setLoading(false);
+    });
 
+    return unsubscribe;
+  }, []);
+
+  // Register new user (Firebase + backend)
   const register = async (
     firstName: string,
     lastName: string,
     email: string,
     password: string,
-    role: string
+    role: Role
   ): Promise<{ success: boolean; error?: string }> => {
     try {
-      const cred = await createUserWithEmailAndPassword(firebaseAuth, email, password)
-  
-      const token = await cred.user.getIdToken()
-      localStorage.setItem('token', token)
-      API.defaults.headers.common['Authorization'] = `Bearer ${token}`
-  
+      const cred = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+      await saveAuthToken(cred.user);
+
+      // Optional: await cred.user.sendEmailVerification();
+
       try {
-        // Now tell your backend about firstName/lastName/role
-        await registerAPI({ firstName, lastName, role })
-        return { success: true }
+        await registerAPI({ firstName, lastName, role });
+        return { success: true };
       } catch (apiError) {
-        // If API fails, delete Firebase account
-        await cred.user.delete()
-        console.error('Backend registration failed, Firebase account deleted:', apiError)
-        return { success: false, error: 'Failed to complete registration. Please try again.' }
+        // Rollback Firebase user if backend registration fails
+        await cred.user.delete();
+        clearAuthState();
+        console.error('Backend registration failed:', apiError);
+        return {
+          success: false,
+          error: 'Failed to complete registration. Please try again.',
+        };
       }
-  
     } catch (err: any) {
-      console.error('Registration failed:', err)
-      let message = 'Registration failed. Please try again.'
+      console.error('Registration error:', err);
+      let message = 'Registration failed. Please try again.';
+
       if (err instanceof FirebaseError) {
         switch (err.code) {
           case 'auth/email-already-in-use':
-            message = 'That email is already registered. Please log in instead.'
-            break
+            message = 'That email is already registered. Please log in instead.';
+            break;
           case 'auth/weak-password':
-            message = 'Password is too weak. Try at least 6 characters.'
-            break
+            message = 'Password is too weak. Try at least 6 characters.';
+            break;
         }
       }
-      return { success: false, error: message }
+
+      return { success: false, error: message };
     }
-  }
-  
+  };
 
+  // Login existing user
   const login = async (email: string, password: string): Promise<void> => {
-    await signInWithEmailAndPassword(firebaseAuth, email, password)
-  }
+    await signInWithEmailAndPassword(firebaseAuth, email, password);
 
+    // Optional: block if email not verified
+    // if (!firebaseAuth.currentUser?.emailVerified) {
+    //   await signOut(firebaseAuth);
+    //   throw new Error('Please verify your email before logging in.');
+    // }
+  };
+
+  // Logout user
   const logout = async () => {
-    await signOut(firebaseAuth)
-  }
+    await signOut(firebaseAuth);
+    clearAuthState();
+    setUser(null);
+    setIsAuthenticated(false);
+  };
 
   const value: AuthContextType = {
     user,
     loading,
+    isAuthenticated,
     register,
     login,
     logout,
-    isAuthenticated
-  }
+  };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+// Hook for easier us
 
 export const useAuth = (): AuthContextType => {
-  const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider')
-  return ctx
-}
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
+  return context;
+};

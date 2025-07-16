@@ -1,6 +1,8 @@
+export type Role = 'Student' | 'Professor';
+
 export interface User {
   id: string;
-  role: string;
+  role: Role;
   email: string;
   firstName?: string;
   lastName?: string;
@@ -10,7 +12,6 @@ export interface User {
 export interface Patient {
   id: string;
   name: string;
-  // dob: string;
   contact: string;
   notes: string;
   email?: string;
@@ -18,7 +19,7 @@ export interface Patient {
 
 export interface PatientName {
   id: string;
-  name: string
+  name: string;
 }
 
 export interface FileAttachment {
@@ -33,50 +34,38 @@ export interface Appointment {
   patientId: string;
   title: string;
   description: string;
-  // comments: string;
   appointmentDate: string;
-  // cost?: number;
-  // treatment?: string;
   status: 'Scheduled' | 'In Progress' | 'Completed' | 'Cancelled';
-  // nextDate?: string;
-  // files: FileAttachment[];
 }
 
 export interface AuthContextType {
-  user: User | null
-
-  // we don’t inspect the UserCredential on the front-end,
-  // so just return void on success, throw on failure
-  login: (email: string, password: string) => Promise<void>
-
-  // we don’t need to await signOut, and it never fails in practice
-  logout: () => void
-
-  // true on success, false on any error
+  user: User | null;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
   register: (
     firstName: string,
     lastName: string,
     email: string,
     password: string,
-    role: string
-  ) => Promise<{ success: boolean; error?: string }>
-
-  isAuthenticated: boolean
-  loading: boolean; // ← new
+    role: Role
+  ) => Promise<{ success: boolean; error?: string }>;
+  isAuthenticated: boolean;
+  loading: boolean;
 }
 
 export interface AppContextType {
   patients: Patient[];
   patientNames: PatientName[];
   totalCountPatients: number;
+  getPatientNames: () => void;
   getPatients: (startIdx: number, endIdx: number, searchTerm: string, sort: string) => void;
   appointments: Appointment[];
   addPatient: (patient: Omit<Patient, 'id'>) => void;
   updatePatient: (id: string, patient: Partial<Patient>) => void;
-  deletePatient: (id: string) => Boolean | Promise<Boolean>;
+  deletePatient: (id: string) => boolean | Promise<boolean>;
   getAppointments: (startIdx: number, endIdx: number, searchTerm: string, sort: string) => void;
-  addAppointment: (appointment: Appointment) => void;
-  updateAppointment: (id: string, appointment: Appointment) => void;
+  addAppointment: (appointment: Omit<Appointment, 'id'>) => void;
+  updateAppointment: (id: string, appointment: Partial<Appointment> & { appointmentDate: string; time: string }) => void;
   deleteAppointment: (id: string) => void;
   totalCountAppointments: number;
 }

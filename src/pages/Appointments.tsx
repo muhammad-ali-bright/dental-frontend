@@ -21,7 +21,7 @@ import { format } from 'date-fns';
 import Pagination from '../components/Pagination'; // Make sure this exists
 
 const Appointments: React.FC = () => {
-  const { patientNames, appointments, totalCountAppointments ,getAppointments, addAppointment, updateAppointment, deleteAppointment } = useApp();
+  const { patientNames, appointments, totalCountAppointments, getAppointments, addAppointment, updateAppointment, deleteAppointment, getPatientNames } = useApp();
   const location = useLocation();
   const { editId } = (location.state ?? {}) as { editId?: string };
   const navigate = useNavigate();
@@ -77,6 +77,7 @@ const Appointments: React.FC = () => {
       title: appt.title,
       description: appt.description,
       appointmentDate: appt.appointmentDate,
+      time: new Date(appt.appointmentDate).toISOString(), // add time
       status: next,
     };
 
@@ -122,6 +123,13 @@ const Appointments: React.FC = () => {
     getAppointments(startIdx, endIdx, searchTerm, sort);
   }, [currentPage, searchTerm]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      getPatientNames();
+    };
+    fetchData();
+  })
+
 
   // ── Filtering ───────────────────────────────────────────────────────────────
   // const filteredAppointments = appointments.filter(appt => {
@@ -139,7 +147,10 @@ const Appointments: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (editingAppointment) {
-      await updateAppointment(editingAppointment.id, formData);
+      await updateAppointment(editingAppointment.id, {
+        ...formData,
+        time: new Date(formData.appointmentDate).toISOString(),
+      });
       getAppointments(startIdx, endIdx, searchTerm, sort);
     } else {
       await addAppointment(formData);

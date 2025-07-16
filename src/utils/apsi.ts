@@ -30,6 +30,16 @@ export interface RegisterPayload {
 
 
 // Auth endpoints
+export const loginUserFromAPI = async (
+    email: string,
+    password: string
+): Promise<AxiosResponse> => {
+    const userCred = await signInWithEmailAndPassword(firebaseAuth, email, password);
+    const token = await userCred.user.getIdToken();
+    localStorage.setItem('token', token);
+
+    return API.post('/auth/login', { token });
+};
 
 export const registerAPI = (data: RegisterPayload): Promise<AxiosResponse> => {
     return API.post('/auth/register', data)
@@ -79,20 +89,8 @@ export const saveAppointmentsToAPI = async (appointments: Appointment[]) => {
     if (!response.ok) throw new Error('Failed to save appointments');
 };
 
-export const loginUserFromAPI = async (email: string, password: string) => {
-    try {
-        const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password);
-        const token = await userCredential.user.getIdToken();
-        localStorage.setItem('token', token); // Store the token in local storage
-        // Set the token in the Authorization header for the custom Axios instance
-        const response = await API.post('/auth/login', {
-            token
-        });
-        return response; // Returning the response for further use
-    } catch (error: any) {
-        throw error; // Pass the error to be handled by the caller
-    }
-};
+
+
 
 
 
