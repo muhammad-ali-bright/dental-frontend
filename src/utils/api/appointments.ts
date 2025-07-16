@@ -7,6 +7,7 @@ interface GetAppointmentsResponse {
     totalCount: number;
 }
 
+
 export const getAppointmentsFromAPI = async (
     startIdx: number,
     endIdx: number,
@@ -18,6 +19,20 @@ export const getAppointmentsFromAPI = async (
     });
     return data;
 };
+
+export const getAppointmentsByDateFromAPI = async (
+    startDate: Date,
+    endDate: Date
+): Promise<Appointment[]> => {
+    const res = await API.get<Appointment[]>('/appointments/dateRange', {
+        params: {
+            startDate: startDate.toISOString(),
+            endDate: endDate.toISOString(),
+        },
+    });
+    return res.data;
+};
+
 
 export const addAppointmentFromAPI = async (
     appointment: Omit<Appointment, 'id'>

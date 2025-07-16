@@ -10,6 +10,7 @@ import {
   updatePatientFromAPI,
   deletePatientFromAPI,
   addAppointmentFromAPI,
+  getAppointmentsByDateFromAPI,
   updateAppointmentFromAPI,
   getAppointmentsFromAPI,
   deleteAppointmentFromAPI,
@@ -30,6 +31,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [patientNames, setPatientNames] = useState<PatientName[]>([]);
   const [totalCountPatients, setTotalCountPatients] = useState<number>(0);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [appointmentsForMonth, setAppointmentsForMonth] = useState<Appointment[]>([]);
+  const [appointmentsForWeek, setAppointmentsForWeek] = useState<Appointment[]>([]);
   const [totalCountAppointments, setTotalCountAppointments] = useState<number>(0);
 
   const getPatientNames = async () => {
@@ -73,6 +76,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setTotalCountAppointments(totalCount);
   };
 
+  const getAppointmentsForMonth = async (startDate: Date, endDate: Date) => {
+    const appointments = await getAppointmentsByDateFromAPI(startDate, endDate);
+    setAppointmentsForMonth(appointments); // ✅ Now this matches Appointment[]
+  };
+
+  const getAppointmentsForWeek = async (start: Date, end: Date) => {
+    const appointments = await getAppointmentsByDateFromAPI(start, end);
+    setAppointmentsForWeek(appointments);
+  };
+
   const addAppointment = async (appointmentData: Omit<Appointment, 'id'>) => {
     await addAppointmentFromAPI(appointmentData);
   };
@@ -95,6 +108,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     getPatientNames,
     getPatients,
     appointments,
+    appointmentsForMonth,
+    appointmentsForWeek,
+    getAppointmentsForMonth,
+    getAppointmentsForWeek,
     addPatient,
     updatePatient,
     deletePatient,

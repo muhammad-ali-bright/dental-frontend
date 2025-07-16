@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import SidebarNavItem from './SidebarNavItem';
-import { Toaster, toast } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 interface LayoutProps {
     children: React.ReactNode;

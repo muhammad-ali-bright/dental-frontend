@@ -58,14 +58,36 @@ export interface AppContextType {
   patientNames: PatientName[];
   totalCountPatients: number;
   getPatientNames: () => void;
-  getPatients: (startIdx: number, endIdx: number, searchTerm: string, sort: string) => void;
+  getPatients: (
+    startIdx: number,
+    endIdx: number,
+    searchTerm: string,
+    sort: string
+  ) => void;
+
   appointments: Appointment[];
+  appointmentsForMonth: Appointment[];
+  appointmentsForWeek: Appointment[];
+  totalCountAppointments: number;
+
+  getAppointments: (
+    startIdx: number,
+    endIdx: number,
+    searchTerm: string,
+    sort: string
+  ) => void;
+
+  getAppointmentsForMonth: (startDate: Date, endDate: Date) => void;
+  getAppointmentsForWeek: (startDate: Date, endDate: Date) => void;
+
   addPatient: (patient: Omit<Patient, 'id'>) => void;
   updatePatient: (id: string, patient: Partial<Patient>) => void;
   deletePatient: (id: string) => boolean | Promise<boolean>;
-  getAppointments: (startIdx: number, endIdx: number, searchTerm: string, sort: string) => void;
+
   addAppointment: (appointment: Omit<Appointment, 'id'>) => void;
-  updateAppointment: (id: string, appointment: Partial<Appointment> & { appointmentDate: string; time: string }) => void;
+  updateAppointment: (
+    id: string,
+    appointment: Partial<Appointment> & { appointmentDate: string; time: string }
+  ) => void;
   deleteAppointment: (id: string) => void;
-  totalCountAppointments: number;
 }
