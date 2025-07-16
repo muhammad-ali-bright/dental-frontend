@@ -1,6 +1,7 @@
 // src/components/AppointmentModal.tsx
 import React, { useState } from 'react';
 import { X as CloseIcon, Loader2 } from 'lucide-react';
+import { parseISO, format } from 'date-fns'
 import { Appointment, PatientName } from '../../types';
 
 
@@ -111,9 +112,12 @@ const AppointmentModal: React.FC<Props> = ({
                             <input
                                 type="datetime-local"
                                 required
-                                value={formData.appointmentDate}
-                                onChange={e => setFormData(prev => ({ ...prev, appointmentDate: e.target.value }))}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                value={
+                                    formData.appointmentDate
+                                        ? format(parseISO(formData.appointmentDate), "yyyy-MM-dd'T'HH:mm")
+                                        : ""
+                                }
+                                onChange={e => setFormData(f => ({ ...f, appointmentDate: e.target.value }))}
                             />
                         </div>
                     </div>

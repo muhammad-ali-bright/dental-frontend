@@ -9,6 +9,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { Appointment } from '../types';
 import Pagination from '../components/Pagination';
 import AppointmentCard from '../components/appointment/AppointmentCard';
+import AppointmentModal from '../components/appointment/AppointmentModal';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
 
 const statusOrder: Appointment['status'][] = [
@@ -30,13 +31,30 @@ const Appointments: React.FC = () => {
     getPatientNames,
   } = useApp();
 
+  // Pagination & filters
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'All' | Appointment['status']>('All');
+
+  // Deletion state
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deletingAppointmentId, setDeletingAppointmentId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Loading state
   const [loading, setLoading] = useState(true);
+
+  // Modal & form state
+  const [showModal, setShowModal] = useState(false);
+  const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
+  const [formData, setFormData] = useState({
+    id: '',
+    patientId: '',
+    title: '',
+    description: '',
+    appointmentDate: '',
+    status: 'Scheduled' as Appointment['status'],
+  });
 
   const perPage = 6;
   const startIdx = useMemo(() => (currentPage - 1) * perPage, [currentPage]);
@@ -46,13 +64,48 @@ const Appointments: React.FC = () => {
     [totalCountAppointments]
   );
 
-  // Show confirm dialog
+  // Fetch patient names once
+  useEffect(() => {
+    getPatientNames();
+  }, []);
+
+  // Fetch appointments on pagination, search
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      await getAppointments(startIdx, endIdx, searchTerm, '');
+      setLoading(false);
+    })();
+  }, [startIdx, endIdx, searchTerm]);
+
+  // Open add modal
+  const openAddModal = () => {
+    setEditingAppointment(null);
+    setFormData({ id: '', patientId: '', title: '', description: '', appointmentDate: '', status: 'Scheduled' });
+    setShowModal(true);
+  };
+
+  // Handle edit click
+  const handleEdit = (appt: Appointment) => {
+    setEditingAppointment(appt);
+    setFormData({
+      id: appt.id,
+      patientId: appt.patientId,
+      title: appt.title,
+      description: appt.description,
+      appointmentDate: appt.appointmentDate,
+      status: appt.status,
+    });
+    setShowModal(true);
+  };
+
+  // Handle deletion prompt
   const promptDelete = (id: string) => {
     setDeletingAppointmentId(id);
     setShowDeleteConfirm(true);
   };
 
-  // User confirms deletion
+  // Confirm delete
   const handleConfirmDelete = async () => {
     if (!deletingAppointmentId) return;
     setIsDeleting(true);
@@ -79,22 +132,31 @@ const Appointments: React.FC = () => {
     setDeletingAppointmentId(null);
   };
 
-  // Initial load
-  useEffect(() => {
-    getPatientNames();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
+  // Handle add/update submit
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = {
+      patientId: formData.patientId,
+      title: formData.title,
+      description: formData.description,
+      appointmentDate: formData.appointmentDate,
+      time: formData.appointmentDate,
+      status: formData.status,
+    };
+    try {
+      if (editingAppointment) {
+        await updateAppointment(formData.id, payload);
+        toast.success('Appointment updated');
+      } else {
+        await addAppointment(payload);
+        toast.success('Appointment added');
+      }
       await getAppointments(startIdx, endIdx, searchTerm, '');
-      setLoading(false);
-    })();
-  }, [startIdx, endIdx, searchTerm]);
-
-  // Placeholder: handlers for add/edit/status would go here
-  const handleEdit = (appt: Appointment) => { /* … */ };
-  const handleStatusClick = (appt: Appointment) => { /* … */ };
+      setShowModal(false);
+    } catch {
+      toast.error('Failed to save appointment');
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -107,7 +169,7 @@ const Appointments: React.FC = () => {
           <p className="text-gray-600">Manage patient appointments and treatments</p>
         </div>
         <button
-          onClick={() => {/* open add modal */}}
+          onClick={openAddModal}
           className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
         >
           <Plus size={20} />
@@ -161,7 +223,7 @@ const Appointments: React.FC = () => {
                 }
                 onEdit={() => handleEdit(appt)}
                 onDelete={() => promptDelete(appt.id)}
-                onStatusClick={() => handleStatusClick(appt)}
+                onStatusClick={() => {/* status change handler */ }}
               />
             ))}
         </div>
@@ -183,6 +245,19 @@ const Appointments: React.FC = () => {
           onConfirm={handleConfirmDelete}
           onCancel={handleCancelDelete}
           isLoading={isDeleting}
+        />
+      )}
+
+      {/* Add / Edit Modal */}
+      {showModal && (
+        <AppointmentModal
+          formData={formData}
+          setFormData={setFormData}
+          patientNames={patientNames}
+          statusOrder={statusOrder}
+          editingAppointment={editingAppointment}
+          onClose={() => setShowModal(false)}
+          onSubmit={handleSubmit}
         />
       )}
     </div>
