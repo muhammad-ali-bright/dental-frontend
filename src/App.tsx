@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import PatientDashboard from './pages/PatientDashboard';
 import Patients from './pages/Patients';
 import Appointments from './pages/Appointments';
+import Calendar from './pages/Calendar';
 import CalendarView from './pages/CalendarView';
 import MyAppointments from './pages/MyAppointments';
 import ProtectedRoute from './routes/ProtectedRoute';
@@ -49,7 +50,7 @@ function App() {
               <Route path="/calendar" element={
                 <ProtectedRoute roles={['Student']}>
                   <Layout>
-                    <CalendarView />
+                    <Calendar />
                   </Layout>
                 </ProtectedRoute>
               } />
