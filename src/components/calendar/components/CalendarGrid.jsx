@@ -109,6 +109,7 @@ const CalendarGrid = ({
       description: form.description,
       student: form.student,
       status: form.status || "Scheduled",
+      color: form.color || "#a855f7", // ← ✅ Add this line
     };
 
     if (editingEvent) {
@@ -121,6 +122,7 @@ const CalendarGrid = ({
 
     closeForm();
   };
+
 
   return (
     <div className="flex-1 bg-white relative p-4">

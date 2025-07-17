@@ -7,7 +7,8 @@
     "endTime": "01:30",
     "description": "Go To the Dentist",
     "student": "123123123123",
-    "status": "Scheduled"
+    "status": "Scheduled",
+    "color": "#3498db"
   },
   {
     "id": "2",
@@ -17,7 +18,8 @@
     "endTime": "01:30",
     "description": "Go To the Dentist",
     "student": "123123123123",
-    "status": "Scheduled"
+    "status": "Scheduled",
+    "color": "#3498db"
   },
   {
     "id": "3",
@@ -27,7 +29,8 @@
     "endTime": "01:30",
     "description": "Go To the Dentist",
     "student": "123123123123",
-    "status": "Scheduled"
+    "status": "Scheduled",
+    "color": "#3498db"
   },
   {
     "id": "4",
@@ -37,6 +40,7 @@
     "endTime": "01:30",
     "description": "Go To the Dentist",
     "student": "123123123123",
-    "status": "Scheduled"
+    "status": "Scheduled",
+    "color": "#3498db"
   }
 ]
