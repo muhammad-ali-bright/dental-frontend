@@ -25,7 +25,7 @@ const CalendarGrid = ({
     startTime: "",
     endTime: "",
     description: "",
-    student: "",
+    patient: "",
     status: "Scheduled", // default status
   });
 
@@ -56,7 +56,7 @@ const CalendarGrid = ({
       startTime: `${hour.toString().padStart(2, "0")}:00`,
       endTime: `${(hour + 1).toString().padStart(2, "0")}:00`,
       description: "",
-      student: "",
+      patient: "",
       status: "Scheduled",
     });
 
@@ -71,7 +71,7 @@ const CalendarGrid = ({
       startTime: event.startTime,
       endTime: event.endTime,
       description: event.description || "",
-      student: event.student || "",
+      patient: event.patient || "",
       status: event.status || "Scheduled",
       color: event.color || "#2196f3",
     });
@@ -94,7 +94,7 @@ const CalendarGrid = ({
       startTime: "",
       endTime: "",
       description: "",
-      student: "",
+      patient: "",
       status: "Scheduled",
     });
   };
@@ -107,7 +107,7 @@ const CalendarGrid = ({
       startTime: form.startTime,
       endTime: form.endTime,
       description: form.description,
-      student: form.student,
+      patient: form.patient,
       status: form.status || "Scheduled",
       color: form.color || "#a855f7", // ← ✅ Add this line
     };

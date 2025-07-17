@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
+import { useApp } from "../../../context/AppContext";
+
 const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
   const timeOptions = Array.from({ length: 96 }, (_, i) => {
     const h = Math.floor(i / 4).toString().padStart(2, "0");
@@ -11,6 +13,9 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
   const predefinedColors = ["#f87171", "#60a5fa", "#34d399", "#facc15"];
   const [customColor, setCustomColor] = useState(form.color || "#a855f7");
   const [showColorPicker, setShowColorPicker] = useState(false);
+
+  const { patientNames } = useApp();
+  console.log(patientNames);
 
   useEffect(() => {
     if (!form.color) {
@@ -115,14 +120,19 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
       />
 
       {/* Student */}
-      <label className="text-sm font-medium text-gray-700">Student ID</label>
-      <input
-        type="text"
-        value={form.student || ""}
-        onChange={(e) => setForm({ ...form, student: e.target.value })}
-        placeholder="Student ID"
+      <label className="text-sm font-medium text-gray-700">Patient</label>
+      <select
+        value={form.patient || ""}
+        onChange={(e) => setForm({ ...form, patient: e.target.value })}
         className="w-full border border-gray-300 px-3 py-2 mb-4 rounded-md text-sm focus:ring-2 focus:ring-blue-200"
-      />
+      >
+        <option value="">Select a patient</option>
+        {patientNames.map((p) => (
+          <option key={p.id} value={p.id}>
+            {p.name}
+          </option>
+        ))}
+      </select>
 
       {/* Status */}
       <label className="text-sm font-medium text-gray-700">Status</label>
@@ -194,8 +204,8 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
         onClick={onSave}
         disabled={!isValid}
         className={`w-full py-2 rounded-md font-semibold text-sm transition ${isValid
-            ? "bg-blue-600 text-white hover:bg-blue-700"
-            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          ? "bg-blue-600 text-white hover:bg-blue-700"
+          : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
       >
         Save Appointment
@@ -214,7 +224,7 @@ EventForm.propTypes = {
     startTime: PropTypes.string,
     endTime: PropTypes.string,
     description: PropTypes.string,
-    student: PropTypes.string,
+    patient: PropTypes.string,
     status: PropTypes.string,
     color: PropTypes.string,
   }),
