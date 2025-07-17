@@ -52,7 +52,7 @@ const Appointments: React.FC = () => {
     patientId: '',
     title: '',
     description: '',
-    appointmentDate: '',
+    date: '',
     status: 'Scheduled' as Appointment['status'],
   });
 
@@ -81,7 +81,7 @@ const Appointments: React.FC = () => {
   // Open add modal
   const openAddModal = () => {
     setEditingAppointment(null);
-    setFormData({ id: '', patientId: '', title: '', description: '', appointmentDate: '', status: 'Scheduled' });
+    setFormData({ id: '', patientId: '', title: '', description: '', date: '', status: 'Scheduled' });
     setShowModal(true);
   };
 
@@ -93,7 +93,7 @@ const Appointments: React.FC = () => {
       patientId: appt.patientId,
       title: appt.title,
       description: appt.description,
-      appointmentDate: appt.appointmentDate,
+      date: appt.date,
       status: appt.status,
     });
     setShowModal(true);
@@ -139,8 +139,8 @@ const Appointments: React.FC = () => {
       patientId: formData.patientId,
       title: formData.title,
       description: formData.description,
-      appointmentDate: formData.appointmentDate,
-      time: formData.appointmentDate,
+      date: formData.date,
+      time: formData.date,
       status: formData.status,
     };
     try {

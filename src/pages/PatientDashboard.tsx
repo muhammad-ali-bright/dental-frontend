@@ -31,17 +31,17 @@ const PatientDashboard: React.FC = () => {
 
     const upcomingAppointments = patientAppointments
       .filter(appointment => {
-        const appointmentDate = new Date(appointment.appointmentDate);
-        return isAfter(appointmentDate, now);
+        const date = new Date(appointment.date);
+        return isAfter(date, now);
       })
-      .sort((a, b) => new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime());
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     const pastAppointments = patientAppointments
       .filter(appointment => {
-        const appointmentDate = new Date(appointment.appointmentDate);
-        return isBefore(appointmentDate, now);
+        const date = new Date(appointment.date);
+        return isBefore(date, now);
       })
-      .sort((a, b) => new Date(b.appointmentDate).getTime() - new Date(a.appointmentDate).getTime());
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     const nextAppointment = upcomingAppointments[0];
 
@@ -180,7 +180,7 @@ const PatientDashboard: React.FC = () => {
                 <h4 className="font-medium text-gray-900">{nextAppointment.title}</h4>
                 <p className="text-gray-600 mt-1">{nextAppointment.description}</p>
                 <p className="text-sm text-gray-500 mt-2">
-                  {format(new Date(nextAppointment.appointmentDate), 'EEEE, MMMM d, yyyy h:mm a')}
+                  {format(new Date(nextAppointment.date), 'EEEE, MMMM d, yyyy h:mm a')}
                 </p>
               </div>
               <span className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -223,7 +223,7 @@ const PatientDashboard: React.FC = () => {
                     </div>
                     <p className="text-sm text-gray-600 mb-2">{appointment.description}</p>
                     <p className="text-sm text-gray-500">
-                      {format(new Date(appointment.appointmentDate), 'MMM d, yyyy h:mm a')}
+                      {format(new Date(appointment.date), 'MMM d, yyyy h:mm a')}
                     </p>
                   </div>
                 ))}
@@ -259,7 +259,7 @@ const PatientDashboard: React.FC = () => {
                     </div>
                     <p className="text-sm text-gray-600 mb-2">{appointment.description}</p>
                     <p className="text-sm text-gray-500 mb-2">
-                      {format(new Date(appointment.appointmentDate), 'MMM d, yyyy')}
+                      {format(new Date(appointment.date), 'MMM d, yyyy')}
                     </p>
                   </div>
                 ))}

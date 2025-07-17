@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 
 const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
   const timeOptions = Array.from({ length: 96 }, (_, i) => {
@@ -15,10 +16,12 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
     if (!form.color) {
       setForm({ ...form, color: customColor });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const isValid =
     form.title &&
+    form.date &&
     form.startTime &&
     form.endTime &&
     form.endTime >= form.startTime;
@@ -36,7 +39,7 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-semibold text-gray-800 tracking-wide">
-          {modal?.editMode ? "Edit Event" : "Create New Event"}
+          {modal?.editMode ? "Edit Appointment" : "Create New Appointment"}
         </h3>
         <button
           onClick={onClose}
@@ -47,16 +50,16 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
       </div>
 
       {/* Title */}
-      <label className="text-sm font-medium text-gray-700">Event Title</label>
+      <label className="text-sm font-medium text-gray-700">Title</label>
       <input
         type="text"
         value={form.title}
         onChange={(e) => setForm({ ...form, title: e.target.value })}
-        placeholder="Meeting with team"
+        placeholder="Appointment title"
         className="w-full border border-gray-300 px-3 py-2 mb-4 rounded-md text-sm focus:ring-2 focus:ring-blue-200"
       />
 
-      {/* Date */}
+      {/* Appointment Date */}
       <label className="text-sm font-medium text-gray-700">Date</label>
       <input
         type="date"
@@ -72,8 +75,7 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
           value={form.startTime}
           onChange={(e) => {
             const newStart = e.target.value;
-            const newEnd =
-              form.endTime >= newStart ? form.endTime : newStart;
+            const newEnd = form.endTime >= newStart ? form.endTime : newStart;
             setForm({ ...form, startTime: newStart, endTime: newEnd });
           }}
           className="flex-1 border border-gray-300 rounded-md px-2 py-2 text-sm"
@@ -102,6 +104,38 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
         </select>
       </div>
 
+      {/* Description */}
+      <label className="text-sm font-medium text-gray-700">Description</label>
+      <textarea
+        value={form.description || ""}
+        onChange={(e) => setForm({ ...form, description: e.target.value })}
+        placeholder="Add details..."
+        className="w-full border border-gray-300 px-3 py-2 mb-4 rounded-md text-sm focus:ring-2 focus:ring-blue-200 resize-none"
+        rows={3}
+      />
+
+      {/* Student */}
+      <label className="text-sm font-medium text-gray-700">Student ID</label>
+      <input
+        type="text"
+        value={form.student || ""}
+        onChange={(e) => setForm({ ...form, student: e.target.value })}
+        placeholder="Student ID"
+        className="w-full border border-gray-300 px-3 py-2 mb-4 rounded-md text-sm focus:ring-2 focus:ring-blue-200"
+      />
+
+      {/* Status */}
+      <label className="text-sm font-medium text-gray-700">Status</label>
+      <select
+        value={form.status || "Scheduled"}
+        onChange={(e) => setForm({ ...form, status: e.target.value })}
+        className="w-full border border-gray-300 px-3 py-2 mb-4 rounded-md text-sm focus:ring-2 focus:ring-blue-200"
+      >
+        <option value="Scheduled">Scheduled</option>
+        <option value="Completed">Completed</option>
+        <option value="Canceled">Canceled</option>
+      </select>
+
       {/* Color Picker */}
       <label className="text-sm font-medium text-gray-700">Color</label>
       <div className="flex items-center gap-3 mb-4 mt-1">
@@ -112,11 +146,8 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
               setForm({ ...form, color: c });
               setShowColorPicker(false);
             }}
-            className={`w-6 h-6 rounded-full ring-2 ${
-              form.color === c
-                ? "ring-black ring-offset-2"
-                : "ring-transparent"
-            }`}
+            className={`w-6 h-6 rounded-full ring-2 ${form.color === c ? "ring-black ring-offset-2" : "ring-transparent"
+              }`}
             style={{ backgroundColor: c }}
             title={`Color ${i + 1}`}
           />
@@ -162,16 +193,34 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
       <button
         onClick={onSave}
         disabled={!isValid}
-        className={`w-full py-2 rounded-md font-semibold text-sm transition ${
-          isValid
+        className={`w-full py-2 rounded-md font-semibold text-sm transition ${isValid
             ? "bg-blue-600 text-white hover:bg-blue-700"
             : "bg-gray-300 text-gray-500 cursor-not-allowed"
-        }`}
+          }`}
       >
-        Save Event
+        Save Appointment
       </button>
     </div>
   );
+};
+
+EventForm.propTypes = {
+  modal: PropTypes.shape({
+    editMode: PropTypes.bool,
+  }),
+  form: PropTypes.shape({
+    title: PropTypes.string,
+    date: PropTypes.string,
+    startTime: PropTypes.string,
+    endTime: PropTypes.string,
+    description: PropTypes.string,
+    student: PropTypes.string,
+    status: PropTypes.string,
+    color: PropTypes.string,
+  }),
+  setForm: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default EventForm;

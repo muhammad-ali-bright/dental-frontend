@@ -103,12 +103,12 @@ const CalendarView: React.FC = () => {
   const [visibleMonth, setVisibleMonth] = useState<Date>(new Date());
 
   const getAppointmentsByDay = useCallback(
-    (date: Date) => appointmentsForMonth.filter(app => isSameDay(new Date(app.appointmentDate), date)),
+    (date: Date) => appointmentsForMonth.filter(app => isSameDay(new Date(app.date), date)),
     [appointmentsForMonth]
   );
 
   const selectedDateAppointments = useMemo(() => getAppointmentsByDay(selectedDate).sort((a, b) =>
-    new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime()),
+    new Date(a.date).getTime() - new Date(b.date).getTime()),
     [getAppointmentsByDay, selectedDate]
   );
 
@@ -116,7 +116,7 @@ const CalendarView: React.FC = () => {
     const start = startOfMonth(selectedDate);
     const end = endOfMonth(selectedDate);
     return appointmentsForMonth.filter(app => {
-      const d = new Date(app.appointmentDate);
+      const d = new Date(app.date);
       return d >= start && d <= end;
     });
   }, [appointmentsForMonth, selectedDate]);
@@ -124,7 +124,7 @@ const CalendarView: React.FC = () => {
   const events = useMemo(() => {
     const source = view === 'week' ? appointmentsForWeek : appointmentsForMonth;
     return source.map(app => {
-      const start = new Date(app.appointmentDate);
+      const start = new Date(app.date);
       return { id: app.id, title: app.title, start, end: start, status: app.status };
     });
   }, [appointmentsForMonth, appointmentsForWeek, view]);
@@ -207,7 +207,7 @@ const CalendarView: React.FC = () => {
                         <h4 className="font-medium text-lg">{app.title}</h4>
                         <div className="flex items-center space-x-2 text-sm">
                           <Clock size={14} className="mr-1" />
-                          <span>{format(new Date(app.appointmentDate), 'h:mm a')}</span>
+                          <span>{format(new Date(app.date), 'h:mm a')}</span>
                           <span className={`px-2 py-1 rounded text-xs font-medium ${statusColorClasses[app.status]}`}>{app.status}</span>
                         </div>
                       </div>

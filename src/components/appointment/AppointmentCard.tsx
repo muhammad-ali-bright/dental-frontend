@@ -70,11 +70,11 @@ const AppointmentCard: React.FC<Props> = ({
                         </div>
                         <div className="flex items-center space-x-1">
                             <CalendarIcon size={16} />
-                            <span>{format(new Date(appointment.appointmentDate), 'MMM d, yyyy')}</span>
+                            <span>{format(new Date(appointment.date), 'MMM d, yyyy')}</span>
                         </div>
                         <div className="flex items-center space-x-1">
                             <ClockIcon size={16} />
-                            <span>{format(new Date(appointment.appointmentDate), 'h:mm a')}</span>
+                            <span>{format(new Date(appointment.date), 'h:mm a')}</span>
                         </div>
                     </div>
                 </div>

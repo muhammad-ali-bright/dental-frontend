@@ -14,7 +14,7 @@ const PatientCard: React.FC<Props> = ({ patient, appointments, onEdit, onDelete 
   const patientAppointments = appointments.filter(a => a.patientId === patient.id);
   const completed = patientAppointments.filter(a => a.status === 'Completed').length;
   const upcoming = patientAppointments.filter(
-    a => a.status === 'Scheduled' && new Date(a.appointmentDate) > new Date()
+    a => a.status === 'Scheduled' && new Date(a.date) > new Date()
   ).length;
 
   return (

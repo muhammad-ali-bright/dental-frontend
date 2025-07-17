@@ -43,7 +43,7 @@ export const addAppointmentFromAPI = async (
 
 export const updateAppointmentFromAPI = async (
     id: string,
-    appointment: Partial<Appointment> & { appointmentDate: string; time: string }
+    appointment: Partial<Appointment> & { date: string; time: string }
 ): Promise<Appointment> => {
     const { data } = await API.put<Appointment>(`/appointments/${id}`, appointment);
     return data;

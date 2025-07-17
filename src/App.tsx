@@ -10,7 +10,7 @@ import PatientDashboard from './pages/PatientDashboard';
 import Patients from './pages/Patients';
 import Appointments from './pages/Appointments';
 import Calendar from './pages/Calendar';
-import CalendarView from './pages/CalendarView';
+// import CalendarView from './pages/CalendarView';
 import MyAppointments from './pages/MyAppointments';
 import ProtectedRoute from './routes/ProtectedRoute';
 

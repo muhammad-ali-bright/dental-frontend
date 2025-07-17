@@ -34,7 +34,7 @@ export interface Appointment {
   patientId: string;
   title: string;
   description: string;
-  appointmentDate: string;
+  date: string;
   status: 'Scheduled' | 'In Progress' | 'Completed' | 'Cancelled';
 }
 
@@ -87,7 +87,7 @@ export interface AppContextType {
   addAppointment: (appointment: Omit<Appointment, 'id'>) => void;
   updateAppointment: (
     id: string,
-    appointment: Partial<Appointment> & { appointmentDate: string; time: string }
+    appointment: Partial<Appointment> & { date: string; time: string }
   ) => void;
   deleteAppointment: (id: string) => void;
 }

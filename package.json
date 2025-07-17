@@ -59,7 +59,16 @@
     "extends": [
       "eslint:recommended",
       "plugin:react/recommended"
-    ]
+    ],
+    "plugins": [
+      "react-hooks"
+    ],
+    "rules": {
+      "no-undef": "off",
+      "no-unused-vars": "off",
+      "react/prop-types": "off",
+      "react/no-unescaped-entities": "off"
+    }
   },
   "browserslist": {
     "production": [

@@ -11,7 +11,7 @@ interface Props {
         patientId: string;
         title: string;
         description: string;
-        appointmentDate: string;
+        date: string;
         status: Appointment['status'];
     };
     setFormData: React.Dispatch<React.SetStateAction<Props['formData']>>;
@@ -113,11 +113,11 @@ const AppointmentModal: React.FC<Props> = ({
                                 type="datetime-local"
                                 required
                                 value={
-                                    formData.appointmentDate
-                                        ? format(parseISO(formData.appointmentDate), "yyyy-MM-dd'T'HH:mm")
+                                    formData.date
+                                        ? format(parseISO(formData.date), "yyyy-MM-dd'T'HH:mm")
                                         : ""
                                 }
-                                onChange={e => setFormData(f => ({ ...f, appointmentDate: e.target.value }))}
+                                onChange={e => setFormData(f => ({ ...f, date: e.target.value }))}
                             />
                         </div>
                     </div>

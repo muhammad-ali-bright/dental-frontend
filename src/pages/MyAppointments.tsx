@@ -28,17 +28,17 @@ const MyAppointments: React.FC = () => {
 
     const upcoming = patientAppointments
       .filter(appointment => {
-        const appointmentDate = new Date(appointment.appointmentDate);
-        return isAfter(appointmentDate, now);
+        const date = new Date(appointment.date);
+        return isAfter(date, now);
       })
-      .sort((a, b) => new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime());
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     const past = patientAppointments
       .filter(appointment => {
-        const appointmentDate = new Date(appointment.appointmentDate);
-        return isBefore(appointmentDate, now);
+        const date = new Date(appointment.date);
+        return isBefore(date, now);
       })
-      .sort((a, b) => new Date(b.appointmentDate).getTime() - new Date(a.appointmentDate).getTime());
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return { upcoming, past, patient };
   }, [user, patients, appointments]);
@@ -98,11 +98,11 @@ const MyAppointments: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div className="flex items-center text-gray-600">
           <Calendar size={16} className="mr-2" />
-          <span>{format(new Date(appointment.appointmentDate), 'EEEE, MMMM d, yyyy')}</span>
+          <span>{format(new Date(appointment.date), 'EEEE, MMMM d, yyyy')}</span>
         </div>
         <div className="flex items-center text-gray-600">
           <Clock size={16} className="mr-2" />
-          <span>{format(new Date(appointment.appointmentDate), 'h:mm a')}</span>
+          <span>{format(new Date(appointment.date), 'h:mm a')}</span>
         </div>
       </div>
 
@@ -238,7 +238,7 @@ const MyAppointments: React.FC = () => {
               <p className="font-medium">Next Appointment</p>
               <p className="text-sm opacity-90">{upcoming[0].title}</p>
               <p className="text-sm opacity-90">
-                {format(new Date(upcoming[0].appointmentDate), 'MMM d, yyyy h:mm a')}
+                {format(new Date(upcoming[0].date), 'MMM d, yyyy h:mm a')}
               </p>
             </div>
           </div>

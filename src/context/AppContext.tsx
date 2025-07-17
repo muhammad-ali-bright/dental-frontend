@@ -92,7 +92,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const updateAppointment = async (
     id: string,
-    appointmentData: Partial<Appointment> & { appointmentDate: string; time: string }
+    appointmentData: Partial<Appointment> & { date: string; time: string }
   ) => {
     await updateAppointmentFromAPI(id, appointmentData);
   };

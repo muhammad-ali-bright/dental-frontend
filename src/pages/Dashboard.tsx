@@ -25,24 +25,24 @@ const Dashboard: React.FC = () => {
     // Upcoming appointments (next 10)
     const upcomingAppointments = appointments
       .filter(appointment => {
-        const appointmentDate = new Date(appointment.appointmentDate);
-        return isAfter(appointmentDate, now);
+        const date = new Date(appointment.date);
+        return isAfter(date, now);
       })
-      .sort((a, b) => new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime())
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .slice(0, 10);
 
     // Today's appointments
     const todayAppointments = appointments.filter(appointment => {
-      const appointmentDate = new Date(appointment.appointmentDate);
+      const date = new Date(appointment.date);
       const today = new Date();
-      return appointmentDate.toDateString() === today.toDateString();
+      return date.toDateString() === today.toDateString();
     });
 
 
     // This week's appointments
     const weeklyAppointments = appointments.filter(appointment => {
-      const appointmentDate = new Date(appointment.appointmentDate);
-      return isAfter(appointmentDate, now) && isBefore(appointmentDate, nextWeek);
+      const date = new Date(appointment.date);
+      return isAfter(date, now) && isBefore(date, nextWeek);
     });
 
     // Status statistics
@@ -188,7 +188,7 @@ const Dashboard: React.FC = () => {
                     </div>
                     <p className="text-sm text-gray-600 mb-1">{appointment.title}</p>
                     <p className="text-xs text-gray-500">
-                      {format(new Date(appointment.appointmentDate), 'EEE, MMM d - h:mm a')}
+                      {format(new Date(appointment.date), 'EEE, MMM d - h:mm a')}
                     </p>
                     {/* {appointment.cost && (
                       <p className="text-sm font-medium text-green-600 mt-2">
@@ -224,7 +224,7 @@ const Dashboard: React.FC = () => {
                         <p className="font-medium text-gray-900">{patient?.name}</p>
                         <p className="text-sm text-gray-600">{appointment.title}</p>
                         <p className="text-xs text-gray-500">
-                          {format(new Date(appointment.appointmentDate), 'MMM d, yyyy h:mm a')}
+                          {format(new Date(appointment.date), 'MMM d, yyyy h:mm a')}
                         </p>
                       </div>
                       <div className={`px-2 py-1 rounded-full text-xs font-medium ${appointment.status === 'Scheduled' ? 'bg-blue-100 text-blue-800' :

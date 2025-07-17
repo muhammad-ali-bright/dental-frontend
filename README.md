@@ -152,7 +152,7 @@ interface Appointment {
   title: string;
   description: string;
   comments: string;
-  appointmentDate: string;
+  date: string;
   cost?: number;
   treatment?: string;
   status: 'Scheduled' | 'In Progress' | 'Completed' | 'Cancelled';

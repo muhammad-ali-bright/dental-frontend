@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import PropTypes from "prop-types";
 import dayjs from "dayjs";
 import CalendarHeader from "./CalendarHeader";
 import CalendarViewRenderer from "./CalendarViewRenderer";
@@ -20,10 +21,12 @@ const CalendarGrid = ({
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [form, setForm] = useState({
     title: "",
+    date: "", // renamed from 'date'
     startTime: "",
     endTime: "",
-    date: "",
-    color: "#2196f3",
+    description: "",
+    student: "",
+    status: "Scheduled", // default status
   });
 
   const isFirstLoad = useRef(true);
@@ -44,14 +47,20 @@ const CalendarGrid = ({
     e.preventDefault();
     setEditingEvent(null);
     setModal({ position: "center" });
-    if (setSelectedDate) setSelectedDate(day);
+
+    const date = day.format("YYYY-MM-DD");
+
     setForm({
       title: "",
-      date: day.format("YYYY-MM-DD"),
+      date,
       startTime: `${hour.toString().padStart(2, "0")}:00`,
       endTime: `${(hour + 1).toString().padStart(2, "0")}:00`,
-      color: "#2196f3",
+      description: "",
+      student: "",
+      status: "Scheduled",
     });
+
+    if (setSelectedDate) setSelectedDate(day.toDate ? day.toDate() : new Date(date));
   };
 
   const handleEdit = (event) => {
@@ -61,7 +70,10 @@ const CalendarGrid = ({
       date: event.date,
       startTime: event.startTime,
       endTime: event.endTime,
-      color: event.color,
+      description: event.description || "",
+      student: event.student || "",
+      status: event.status || "Scheduled",
+      color: event.color || "#2196f3",
     });
     setModal({ position: "center", editMode: true });
     setSelectedEvent(null);
@@ -72,35 +84,42 @@ const CalendarGrid = ({
     setSelectedEvent(null);
   };
 
-  const saveEv = () => {
-    const [sh, sm] = form.startTime.split(":").map(Number);
-    const [eh, em] = form.endTime.split(":").map(Number);
-
-    const newEvent = {
-      title: form.title,
-      date: form.date,
-      time: form.startTime,
-      duration: `${form.startTime}-${form.endTime}`,
-      color: form.color,
-      startTime: form.startTime,
-      endTime: form.endTime,
-      startHour: sh,
-      startMinute: sm,
-      endHour: eh,
-      endMinute: em,
-    };
-
-    // ✅ Overlapping allowed — remove conflict alert
-    if (editingEvent) {
-      setEvents((prev) =>
-        prev.map((ev) => (ev === editingEvent ? newEvent : ev))
-      );
-    } else {
-      setEvents((prev) => [...prev, newEvent]);
-    }
-
+  const closeForm = () => {
     setModal(null);
     setEditingEvent(null);
+    setSelectedEvent(null);
+    setForm({
+      title: "",
+      date: "",
+      startTime: "",
+      endTime: "",
+      description: "",
+      student: "",
+      status: "Scheduled",
+    });
+  };
+
+  const saveEv = () => {
+    const newAppointment = {
+      id: editingEvent?.id || Date.now().toString(),
+      title: form.title,
+      date: form.date,
+      startTime: form.startTime,
+      endTime: form.endTime,
+      description: form.description,
+      student: form.student,
+      status: form.status || "Scheduled",
+    };
+
+    if (editingEvent) {
+      setEvents((prev) =>
+        prev.map((ev) => (ev.id === editingEvent.id ? newAppointment : ev))
+      );
+    } else {
+      setEvents((prev) => [...prev, newAppointment]);
+    }
+
+    closeForm();
   };
 
   return (
@@ -132,10 +151,7 @@ const CalendarGrid = ({
             form={form}
             setForm={setForm}
             onSave={saveEv}
-            onClose={() => {
-              setModal(null);
-              setEditingEvent(null);
-            }}
+            onClose={closeForm}
           />
         </div>
       )}
@@ -144,9 +160,7 @@ const CalendarGrid = ({
       {selectedEvent && (
         <div className="fixed top-[20%] left-1/2 transform -translate-x-1/2 bg-white shadow-2xl border border-gray-200 rounded-xl p-5 w-72 z-50">
           <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-semibold text-gray-800">
-              {selectedEvent.title}
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-800">{selectedEvent.title}</h3>
             <button
               onClick={() => setSelectedEvent(null)}
               className="text-gray-500 hover:text-red-500 text-xl font-bold"
@@ -175,6 +189,16 @@ const CalendarGrid = ({
       )}
     </div>
   );
+};
+
+CalendarGrid.propTypes = {
+  events: PropTypes.array.isRequired,
+  setEvents: PropTypes.func.isRequired,
+  currentDate: PropTypes.any.isRequired, // or PropTypes.instanceOf(Date) if Date obj
+  setCurrentDate: PropTypes.func.isRequired,
+  view: PropTypes.string.isRequired,
+  setView: PropTypes.func.isRequired,
+  setSelectedDate: PropTypes.func,
 };
 
 export default CalendarGrid;
