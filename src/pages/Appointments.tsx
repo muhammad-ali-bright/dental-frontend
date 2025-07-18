@@ -14,7 +14,7 @@ import ConfirmDialog from '../components/ui/ConfirmDialog';
 
 const statusOrder: Appointment['status'][] = [
   'Scheduled',
-  'In Progress',
+  'InProgress',
   'Completed',
   'Cancelled',
 ];
@@ -54,6 +54,8 @@ const Appointments: React.FC = () => {
     description: '',
     date: '',
     status: 'Scheduled' as Appointment['status'],
+    startTime: '',
+    endTime: ''
   });
 
   const perPage = 6;
@@ -81,7 +83,7 @@ const Appointments: React.FC = () => {
   // Open add modal
   const openAddModal = () => {
     setEditingAppointment(null);
-    setFormData({ id: '', patientId: '', title: '', description: '', date: '', status: 'Scheduled' });
+    setFormData({ id: '', patientId: '', title: '', description: '', date: '', status: 'Scheduled', startTime:'', endTime: '' });
     setShowModal(true);
   };
 
@@ -95,6 +97,8 @@ const Appointments: React.FC = () => {
       description: appt.description,
       date: appt.date,
       status: appt.status,
+      startTime: appt.startTime,
+      endTime: appt.endTime
     });
     setShowModal(true);
   };
@@ -141,6 +145,8 @@ const Appointments: React.FC = () => {
       description: formData.description,
       date: formData.date,
       time: formData.date,
+      startTime: formData.startTime,
+      endTime: formData.endTime,
       status: formData.status,
     };
     try {

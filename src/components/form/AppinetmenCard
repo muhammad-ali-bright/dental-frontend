@@ -25,7 +25,7 @@ interface Props {
 const getStatusIcon = (status: Appointment['status']) => {
     switch (status) {
         case 'Scheduled': return <CalendarIcon size={12} />;
-        case 'In Progress': return <Play size={12} />;
+        case 'InProgress': return <Play size={12} />;
         case 'Completed': return <CheckCircle size={12} />;
         case 'Cancelled': return <XCircle size={12} />;
         default: return null;

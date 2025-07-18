@@ -1,3 +1,4 @@
+// CalendarGrid.jsx
 import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import dayjs from "dayjs";
@@ -45,23 +46,69 @@ const CalendarGrid = ({
     prevDateRef.current = currentDate;
   }, [currentDate]);
 
-  const handleRC = (e, day, hour) => {
+  const handleRC = (e, day, hour = null) => {
     e.preventDefault();
     setEditingEvent(null);
     setModal({ position: "center" });
 
     const date = day.format("YYYY-MM-DD");
+    // Get baseTime from day hour if provided, else now
+    // let baseTime = hour !== null ? day.hour(hour).minute(0).second(0) : dayjs();
+
+    // // Round to next 30-minute block
+    // const minutes = baseTime.minute();
+    // const roundedStart = baseTime.minute(minutes < 30 ? 30 : 0).add(minutes >= 30 ? 1 : 0, "hour");
+    // const roundedEnd = roundedStart.add(30, "minute");
+
+    // let start = null;
+    // if (hour !== null) {
+    //   start = day.hour(hour).minute(0).second(0);
+    // } else {
+    //   const now = dayjs();
+    //   const mins = now.minute();
+    //   const next30 = mins < 30 ? 30 : 0;
+    //   const addHr = mins >= 30 ? 1 : 0;
+    //   start = now.minute(next30).add(addHr, "hour").second(0);
+    // }
+    // const end = start.add(30, "minute");
+
+    // // Format: drop “:00” when on the hour
+    // const fmt = (t) =>
+    //   t.minute() === 0
+    //     ? t.format("h A")
+    //     : t.format("h:mm A");
+
+    // Compute start  end, rounding “now” or using clicked hour
+    const computeStart = () => {
+      if (hour !== null) {
+        return day.hour(hour).minute(0).second(0);
+      }
+      const now = dayjs();
+      const mins = now.minute();
+      const rounded = mins < 30 ? 30 : 0;
+      const incHr = mins >= 30 ? 1 : 0;
+      return now.minute(rounded).add(incHr, "hour").second(0);
+    };
+    const start = computeStart();
+    const end = start.add(30, "minute");
+
+    // Helper: drop “:00” when minutes === 0
+    const fmt = t =>
+      t.minute() === 0
+        ? t.format("h A")
+        : t.format("h:mm A");
 
     setForm({
       title: "",
       date,
-      startTime: `${hour.toString().padStart(2, "0")}:00`,
-      endTime: `${(hour + 1).toString().padStart(2, "0")}:00`,
+      startTime: fmt(start),
+      endTime: fmt(end),
       description: "",
       patientId: "",
       status: "Scheduled",
     });
   };
+
 
   const handleEdit = (event) => {
     setEditingEvent(event);

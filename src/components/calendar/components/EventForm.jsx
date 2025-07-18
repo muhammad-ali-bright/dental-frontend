@@ -1,15 +1,32 @@
+// EventForm.jsx
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-
+import { format } from "date-fns";
 import { useApp } from "../../../context/AppContext";
 
 const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
-  const timeOptions = Array.from({ length: 96 }, (_, i) => {
-    const h = Math.floor(i / 4).toString().padStart(2, "0");
-    const m = (i % 4) * 15;
-    return `${h}:${m.toString().padStart(2, "0")}`;
-  });
+  const generateTimeOptions = () => {
+    const options = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (let min of [0, 30]) {
+        const t = new Date();
+        t.setHours(hour, min, 0, 0);
+        // Match fmt(): “5 PM” if min===0, else “5:30 PM”
+        const label =
+          t.getMinutes() === 0
+            ? t.toLocaleTimeString([], { hour: "numeric", hour12: true })
+            : t.toLocaleTimeString([], {
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
+            });
+        options.push(label);
+      }
+    }
+    return options;
+  };
 
+  const timeOptions = generateTimeOptions();
   const predefinedColors = ["#f87171", "#60a5fa", "#34d399", "#facc15"];
   const [customColor, setCustomColor] = useState(form.color || "#a855f7");
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -17,9 +34,40 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
   const { patientNames, getPatientNames } = useApp();
 
   useEffect(() => {
-    if (!form.color) {
-      setForm({ ...form, color: customColor });
-    }
+    const now = new Date();
+
+    const hasStartTime = !!form.startTime;
+    const hasEndTime = !!form.endTime;
+    const hasDate = !!form.date;
+
+    const minutes = now.getMinutes();
+    const roundedMinutes = minutes < 30 ? 30 : 0;
+    const adjustedHour = minutes >= 30 ? now.getHours() + 1 : now.getHours();
+
+    const defaultStart = new Date();
+    defaultStart.setHours(adjustedHour, roundedMinutes, 0, 0);
+    const defaultEnd = new Date(defaultStart.getTime() + 30 * 60000);
+
+    const formattedStart = defaultStart.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    const formattedEnd = defaultEnd.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    setForm((prevForm) => ({
+      ...prevForm,
+      date: hasDate ? prevForm.date : format(now, "yyyy-MM-dd"),
+      startTime: hasStartTime ? prevForm.startTime : formattedStart,
+      endTime: hasEndTime ? prevForm.endTime : formattedEnd,
+      color: prevForm.color || customColor,
+    }));
+
     getPatientNames();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -29,7 +77,7 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
     form.date &&
     form.startTime &&
     form.endTime &&
-    form.endTime >= form.startTime;
+    timeOptions.indexOf(form.endTime) > timeOptions.indexOf(form.startTime);
 
   return (
     <div
@@ -79,9 +127,21 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
         <select
           value={form.startTime}
           onChange={(e) => {
-            const newStart = e.target.value;
-            const newEnd = form.endTime >= newStart ? form.endTime : newStart;
-            setForm({ ...form, startTime: newStart, endTime: newEnd });
+            const selectedStart = e.target.value;
+            const [h, m, modifier] = selectedStart.split(/:| /);
+            const hour = parseInt(h, 10) % 12 + (modifier === "PM" ? 12 : 0);
+            const minute = parseInt(m, 10);
+            const start = new Date();
+            start.setHours(hour, minute, 0, 0);
+            const end = new Date(start.getTime() + 30 * 60000);
+
+            const formattedEnd = end.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            });
+
+            setForm({ ...form, startTime: selectedStart, endTime: formattedEnd });
           }}
           className="flex-1 border border-gray-300 rounded-md px-2 py-2 text-sm"
         >
@@ -100,7 +160,7 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
           className="flex-1 border border-gray-300 rounded-md px-2 py-2 text-sm"
         >
           {timeOptions
-            .filter((t) => t >= form.startTime)
+            .filter((t) => timeOptions.indexOf(t) > timeOptions.indexOf(form.startTime))
             .map((time) => (
               <option key={time} value={time}>
                 {time}
@@ -119,7 +179,7 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
         rows={3}
       />
 
-      {/* Student */}
+      {/* Patient */}
       <label className="text-sm font-medium text-gray-700">Patient</label>
       <select
         value={form.patientId || ""}
@@ -163,7 +223,6 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
           />
         ))}
 
-        {/* Custom Color */}
         <div className="relative">
           <button
             onClick={() => {
@@ -176,7 +235,7 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="w-3.5 h-3.5 text-white pointer-appointments-none"
+              className="w-3.5 h-3.5 text-white pointer-events-none"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

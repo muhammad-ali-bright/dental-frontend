@@ -185,7 +185,7 @@ const PatientDashboard: React.FC = () => {
               </div>
               <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                 nextAppointment.status === 'Scheduled' ? 'bg-blue-100 text-blue-800' :
-                nextAppointment.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' :
+                nextAppointment.status === 'InProgress' ? 'bg-yellow-100 text-yellow-800' :
                 'bg-green-100 text-green-800'
               }`}>
                 {nextAppointment.status}
@@ -215,7 +215,7 @@ const PatientDashboard: React.FC = () => {
                       <h4 className="font-medium text-gray-900">{appointment.title}</h4>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                         appointment.status === 'Scheduled' ? 'bg-blue-100 text-blue-800' :
-                        appointment.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' :
+                        appointment.status === 'InProgress' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-green-100 text-green-800'
                       }`}>
                         {appointment.status}

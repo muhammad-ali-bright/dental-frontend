@@ -13,7 +13,7 @@ const Calendar = () => {
 
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [view, setView] = useState("week");
-  const [events, setEvents] = useState([]);
+  const [Appointments, setAppointments] = useState([]);
 
   const getRange = () => {
     switch (view) {
@@ -35,38 +35,36 @@ const Calendar = () => {
     }
   };
 
-  const fetchEvents = async () => {
+  const fetchAppointments = async () => {
     const { start, end } = getRange();
     const fetched = await getAppointmentsForCalendarRange(start, end);
-    setEvents(fetched);
+    setAppointments(fetched);
   };
 
   useEffect(() => {
-    fetchEvents();
+    fetchAppointments();
   }, [currentDate, view]);
-
-  console.log(events);
 
   return (
     <div className="flex flex-col md:flex-row">
       <CalendarGrid
-        appointments={events}
-        setEvents={setEvents}
+        appointments={Appointments}
+        setAppointments={setAppointments}
         currentDate={currentDate}
         setCurrentDate={setCurrentDate}
         view={view}
         setView={setView}
         addEvent={async (ev) => {
           await addAppointment(ev);
-          fetchEvents(); // refresh
+          fetchAppointments(); // refresh
         }}
         updateEvent={async (id, data) => {
           await updateAppointment(id, data);
-          fetchEvents(); // refresh
+          fetchAppointments(); // refresh
         }}
         deleteEvent={async (id) => {
           await deleteAppointment(id);
-          fetchEvents(); // refresh
+          fetchAppointments(); // refresh
         }}
       />
     </div>

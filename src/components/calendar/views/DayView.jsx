@@ -1,3 +1,4 @@
+// DayView.jsx
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import dayjs from "dayjs";
@@ -46,9 +47,9 @@ const groupOverlappingEvents = (dayEvents) => {
   return columns;
 };
 
-const DayView = ({ currentDate, events, onRightClick, onEventClick }) => {
+const DayView = ({ currentDate, appointments, onRightClick, onEventClick }) => {
   const hours = Array.from({ length: 24 }, (_, i) => i);
-  const todayEvents = events.filter((e) =>
+  const todayEvents = appointments.filter((e) =>
     dayjs(e.date).isSame(currentDate, "day")
   );
   const columns = groupOverlappingEvents(todayEvents);
@@ -81,7 +82,7 @@ const DayView = ({ currentDate, events, onRightClick, onEventClick }) => {
           <div className="col-span-1 text-right pr-2 text-sm text-gray-600 border-r">
             {hours.map((hr) => (
               <div key={hr} className="h-16 border-t border-gray-300 pr-2">
-                {hr.toString().padStart(2, "0")}:00
+                {dayjs().hour(hr).minute(0).format("h A")}
               </div>
             ))}
           </div>
@@ -116,10 +117,10 @@ const DayView = ({ currentDate, events, onRightClick, onEventClick }) => {
                   duration > 3
                     ? "text-lg"
                     : duration > 2
-                    ? "text-base"
-                    : duration > 1
-                    ? "text-sm"
-                    : "text-xs";
+                      ? "text-base"
+                      : duration > 1
+                        ? "text-sm"
+                        : "text-xs";
 
                 return (
                   <div

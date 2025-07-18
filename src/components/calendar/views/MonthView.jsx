@@ -1,3 +1,4 @@
+// MonthView.jsx
 import React from "react";
 import dayjs from "dayjs";
 
@@ -9,7 +10,7 @@ const formatTime12 = (t) => {
   return `${displayHour}:${m.toString().padStart(2, "0")} ${isPM ? "PM" : "AM"}`;
 };
 
-const MonthView = ({ currentDate, events, onRightClick, onEventClick }) => {
+const MonthView = ({ currentDate, appointments, onRightClick, onEventClick }) => {
   const startOfMonth = currentDate.startOf("month");
   const endOfMonth = currentDate.endOf("month");
   const startDay = startOfMonth.day();
@@ -51,23 +52,22 @@ const MonthView = ({ currentDate, events, onRightClick, onEventClick }) => {
 
       {/* Calendar cells */}
       {days.map(({ date, current }, i) => {
-        const dayEvents = events.filter((e) => dayjs(e.date).isSame(date, "day")).slice(0, 3);
+        const dayEvents = appointments.filter((e) => dayjs(e.date).isSame(date, "day")).slice(0, 3);
         const eventCount = dayEvents.length;
 
         const fontSize =
           eventCount === 1 ? "text-[0.95rem]" :
-          eventCount === 2 ? "text-sm" : "text-xs";
+            eventCount === 2 ? "text-sm" : "text-xs";
 
         const padding =
           eventCount === 1 ? "py-1 px-2" :
-          eventCount === 2 ? "py-1 px-1.5" : "py-0.5 px-1";
+            eventCount === 2 ? "py-1 px-1.5" : "py-0.5 px-1";
 
         return (
           <div
             key={i}
-            className={`p-1 text-xs relative border border-gray-200 cursor-pointer ${
-              current ? "bg-white" : "bg-gray-50 text-gray-400"
-            }`}
+            className={`p-1 text-xs relative border border-gray-200 cursor-pointer ${current ? "bg-white" : "bg-gray-50 text-gray-400"
+              }`}
             style={{ minHeight: "6.5rem" }}
             onClick={(e) => onRightClick(e, date, 9)} // Default 9AM
           >
@@ -75,21 +75,24 @@ const MonthView = ({ currentDate, events, onRightClick, onEventClick }) => {
 
             {/* Events */}
             <div className="absolute top-6 left-1 right-1 space-y-1">
-              {dayEvents.map((e, j) => (
-                <div
-                  key={j}
-                  onClick={(ev) => {
-                    ev.stopPropagation();
-                    onEventClick(e); // ✅ Show popup
-                  }}
-                  className={`rounded-md text-white font-semibold shadow-sm truncate ${padding} ${fontSize}`}
-                  style={{ backgroundColor: e.color }}
-                  title={`${e.title} (${formatTime12(e.startTime)} - ${formatTime12(e.endTime)})`}
-                >
-                  <div>{e.title}</div>
-                  <div className="opacity-90 text-[0.7rem]">{formatTime12(e.startTime)}</div>
-                </div>
-              ))}
+              {
+                dayEvents.map((e, j) => {
+                  return (
+                    <div
+                      key={j}
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        onEventClick(e); // ✅ Show popup
+                      }}
+                      className={`rounded-md text-black font-semibold shadow-sm truncate ${padding} ${fontSize}`}
+                      style={{ backgroundColor: e.color }}
+                      title={`${e.title} (${formatTime12(e.startTime)} - ${formatTime12(e.endTime)})`}
+                    >
+                      <div>{e.title}</div>
+                      <div className="opacity-90 text-[0.7rem]">{formatTime12(e.startTime)}</div>
+                    </div>
+                  )
+                })}
             </div>
           </div>
         );

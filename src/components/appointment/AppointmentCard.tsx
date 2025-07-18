@@ -26,7 +26,7 @@ const getStatusIcon = (status: Appointment['status']) => {
     switch (status) {
         case 'Scheduled':
             return <CalendarIcon size={12} />;
-        case 'In Progress':
+        case 'InProgress':
             return <Play size={12} />;
         case 'Completed':
             return <CheckCircle size={12} />;

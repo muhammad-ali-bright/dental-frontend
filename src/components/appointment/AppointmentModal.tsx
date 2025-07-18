@@ -1,9 +1,8 @@
 // src/components/AppointmentModal.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X as CloseIcon, Loader2 } from 'lucide-react';
-import { parseISO, format } from 'date-fns'
 import { Appointment, PatientName } from '../../types';
-
+import { format, addMinutes, setMinutes, setSeconds, parse } from 'date-fns';
 
 interface Props {
     formData: {
@@ -12,6 +11,8 @@ interface Props {
         title: string;
         description: string;
         date: string;
+        startTime: string;
+        endTime: string;
         status: Appointment['status'];
     };
     setFormData: React.Dispatch<React.SetStateAction<Props['formData']>>;
@@ -22,6 +23,25 @@ interface Props {
     onSubmit: (e: React.FormEvent) => void;
 }
 
+const generateTimeOptions = () => {
+    const times: string[] = [];
+    for (let hour = 0; hour < 24; hour++) {
+        for (let min of [0, 30]) {
+            const time = format(new Date(0, 0, 0, hour, min), 'hh:mm a');
+            times.push(time);
+        }
+    }
+    return times;
+};
+
+const roundToNext30 = (date: Date) => {
+    const minutes = date.getMinutes();
+    const rounded = minutes < 30 ? 30 : 0;
+    const adjustedHour = minutes < 30 ? date.getHours() : date.getHours() + 1;
+    return setSeconds(setMinutes(new Date(date.setHours(adjustedHour)), rounded), 0);
+};
+
+const timeOptions = generateTimeOptions();
 
 const AppointmentModal: React.FC<Props> = ({
     formData,
@@ -32,13 +52,53 @@ const AppointmentModal: React.FC<Props> = ({
     onClose,
     onSubmit,
 }) => {
-
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        if (!editingAppointment) {
+            const now = new Date();
+            const start = roundToNext30(now);
+            const end = addMinutes(start, 30);
+
+            setFormData(prev => ({
+                ...prev,
+                date: format(start, 'yyyy-MM-dd'),
+                startTime: format(start, 'hh:mm a'),
+                endTime: format(end, 'hh:mm a'),
+            }));
+        }
+    }, [editingAppointment, setFormData]);
 
     const handleFormSubmit = async (e: React.FormEvent) => {
         setIsSubmitting(true);
         await onSubmit(e);
         setIsSubmitting(false);
+    };
+
+    const handleStartTimeChange = (newStartTime: string) => {
+        const selectedDate = new Date(`${formData.date} ${newStartTime}`);
+        const updatedEnd = addMinutes(selectedDate, 30);
+
+        setFormData((f) => ({
+            ...f,
+            startTime: newStartTime,
+            endTime: format(updatedEnd, 'hh:mm a'),
+        }));
+    };
+
+    const handleEndTimeChange = (newEndTime: string) => {
+        const startDate = parse(`${formData.date} ${formData.startTime}`, 'yyyy-MM-dd hh:mm a', new Date());
+        const endDate = parse(`${formData.date} ${newEndTime}`, 'yyyy-MM-dd hh:mm a', new Date());
+
+        if (endDate <= startDate) {
+            alert('End time must be after start time.');
+            return;
+        }
+
+        setFormData((f) => ({
+            ...f,
+            endTime: newEndTime
+        }));
     };
 
     return (
@@ -106,19 +166,43 @@ const AppointmentModal: React.FC<Props> = ({
                         />
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Appointment Date & Time *</label>
-                            <input
-                                type="datetime-local"
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
+                        <input
+                            type="date"
+                            required
+                            value={formData.date}
+                            onChange={(e) => setFormData((f) => ({ ...f, date: e.target.value }))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Time *</label>
+                        <div className="flex gap-2 items-center">
+                            <select
                                 required
-                                value={
-                                    formData.date
-                                        ? format(parseISO(formData.date), "yyyy-MM-dd'T'HH:mm")
-                                        : ""
-                                }
-                                onChange={e => setFormData(f => ({ ...f, date: e.target.value }))}
-                            />
+                                value={formData.startTime}
+                                onChange={(e) => handleStartTimeChange(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            >
+                                <option value="">Start Time</option>
+                                {timeOptions.map((time) => (
+                                    <option key={time} value={time}>{time}</option>
+                                ))}
+                            </select>
+                            <span className="text-gray-500">–</span>
+                            <select
+                                required
+                                value={formData.endTime}
+                                onChange={(e) => handleEndTimeChange(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            >
+                                <option value="">End Time</option>
+                                {timeOptions.map((time) => (
+                                    <option key={time} value={time}>{time}</option>
+                                ))}
+                            </select>
                         </div>
                     </div>
 

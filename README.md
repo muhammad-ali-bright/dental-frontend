@@ -155,7 +155,7 @@ interface Appointment {
   date: string;
   cost?: number;
   treatment?: string;
-  status: 'Scheduled' | 'In Progress' | 'Completed' | 'Cancelled';
+  status: 'Scheduled' | 'InProgress' | 'Completed' | 'Cancelled';
   nextDate?: string;
   files: FileAttachment[];
 }

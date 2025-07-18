@@ -1,3 +1,4 @@
+// WeekView.jsx
 import React from "react";
 import dayjs from "dayjs";
 
@@ -8,7 +9,7 @@ const formatTime12 = (t) => {
   return `${displayHour}:${m.toString().padStart(2, "0")} ${isPM ? "PM" : "AM"}`;
 };
 
-const WeekView = ({ currentDate, events = [], onRightClick, onEventClick }) => {
+const WeekView = ({ currentDate, appointments = [], onRightClick, onEventClick }) => {
   const days = Array.from({ length: 7 }, (_, i) =>
     currentDate.startOf("week").add(i, "day")
   );
@@ -24,11 +25,10 @@ const WeekView = ({ currentDate, events = [], onRightClick, onEventClick }) => {
           {days.map((d, i) => (
             <div
               key={i}
-              className={`text-center py-3 font-semibold text-sm md:text-base tracking-wide uppercase ${
-                d.isSame(today, "day")
-                  ? "text-red-500 border-b-2 border-red-400"
-                  : "text-gray-800"
-              }`}
+              className={`text-center py-3 font-semibold text-sm md:text-base tracking-wide uppercase ${d.isSame(today, "day")
+                ? "text-red-500 border-b-2 border-red-400"
+                : "text-gray-800"
+                }`}
             >
               {d.format("ddd, MMM D")}
             </div>
@@ -41,19 +41,19 @@ const WeekView = ({ currentDate, events = [], onRightClick, onEventClick }) => {
           <div className="border-r border-gray-200 pr-2 text-right text-xs md:text-sm text-gray-500 bg-white sticky left-0 z-10">
             {hours.map((h, i) => (
               <div key={i} className="h-16 border-t border-gray-200">
-                {`${h.toString().padStart(2, "0")}:00`}
+                {dayjs().hour(h).minute(0).format("h A")}
               </div>
             ))}
           </div>
 
           {/* Day Columns */}
           {days.map((d, di) => {
-            const dayEvents = events.filter((e) =>
+            const dayappointments = appointments.filter((e) =>
               dayjs(e.date).isSame(d, "day")
             );
 
             const timeBuckets = {};
-            dayEvents.forEach((e) => {
+            dayappointments.forEach((e) => {
               const key = `${e.startTime}-${e.endTime}`;
               if (!timeBuckets[key]) timeBuckets[key] = [];
               timeBuckets[key].push(e);
@@ -62,9 +62,8 @@ const WeekView = ({ currentDate, events = [], onRightClick, onEventClick }) => {
             return (
               <div
                 key={di}
-                className={`border-l border-gray-200 relative ${
-                  d.isSame(today, "day") ? "bg-blue-50" : ""
-                }`}
+                className={`border-l border-gray-200 relative ${d.isSame(today, "day") ? "bg-blue-50" : ""
+                  }`}
               >
                 {/* Hour Slots */}
                 {hours.map((h, hi) => (
@@ -72,11 +71,14 @@ const WeekView = ({ currentDate, events = [], onRightClick, onEventClick }) => {
                     key={hi}
                     className="h-16 border-t border-gray-200 hover:bg-gray-100 cursor-pointer transition"
                     onContextMenu={(e) => onRightClick(e, d, h)}
-                    onClick={(e) => onRightClick(e, d, h)}
+                    onClick={(e) => {
+                      onRightClick(e, d, h)
+                    }
+                    }
                   />
                 ))}
 
-                {/* Events */}
+                {/* appointments */}
                 {Object.entries(timeBuckets).map(([key, group], idx) => {
                   const [startTime, endTime] = key.split("-");
                   const [sh, sm] = startTime.split(":").map(Number);
@@ -90,7 +92,9 @@ const WeekView = ({ currentDate, events = [], onRightClick, onEventClick }) => {
                     return (
                       <div
                         key={`${ev.title}-${j}`}
-                        onClick={() => onEventClick(ev)}
+                        onClick={() => {
+                          onEventClick(ev)
+                        }}
                         className="absolute p-1 rounded-md shadow-sm cursor-pointer text-xs md:text-sm font-medium hover:shadow-md transition"
                         style={{
                           top: `${top}rem`,

@@ -35,7 +35,10 @@ export interface Appointment {
   title: string;
   description: string;
   date: string;
-  status: 'Scheduled' | 'In Progress' | 'Completed' | 'Cancelled';
+  startTime: string;
+  endTime: string;
+  status: 'Scheduled' | 'InProgress' | 'Completed' | 'Cancelled';
+
 }
 
 export interface AuthContextType {

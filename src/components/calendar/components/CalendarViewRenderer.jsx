@@ -1,3 +1,4 @@
+// CalendarViewRender.jsx
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import DayView from "../views/DayView";
@@ -13,7 +14,6 @@ const CalendarViewRenderer = ({
   handleEdit,
   onEventClick,
 }) => {
-  console.log(appointments);
   const variants = {
     initial: { opacity: 0, x: 50 },
     animate: { opacity: 1, x: 0 },

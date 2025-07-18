@@ -48,7 +48,7 @@ const Dashboard: React.FC = () => {
     // Status statistics
     const completedTreatments = appointments.filter(appointment => appointment.status === 'Completed').length;
     const pendingTreatments = appointments.filter(appointment => appointment.status === 'Scheduled').length;
-    const inProgressTreatments = appointments.filter(appointment => appointment.status === 'In Progress').length;
+    const inProgressTreatments = appointments.filter(appointment => appointment.status === 'InProgress').length;
 
     // Top patients (by number of appointments)
     const patientAppointmentCount = patients.map(patient => {
@@ -142,7 +142,7 @@ const Dashboard: React.FC = () => {
           color="bg-orange-500"
         />
         <StatCard
-          title="In Progress"
+          title="InProgress"
           value={dashboardData.inProgressTreatments}
           icon={Activity}
           color="bg-indigo-500"
@@ -228,7 +228,7 @@ const Dashboard: React.FC = () => {
                         </p>
                       </div>
                       <div className={`px-2 py-1 rounded-full text-xs font-medium ${appointment.status === 'Scheduled' ? 'bg-blue-100 text-blue-800' :
-                          appointment.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' :
+                          appointment.status === 'InProgress' ? 'bg-yellow-100 text-yellow-800' :
                             appointment.status === 'Completed' ? 'bg-green-100 text-green-800' :
                               'bg-red-100 text-red-800'
                         }`}>

@@ -32,7 +32,7 @@
 - **Create Appointment:** Schedule new appointments with patient selection
 - **Edit Appointment:** Update appointment details, status, and treatment info
 - **File Upload:** Attach treatment records, invoices, X-rays (base64 storage)
-- **Status Tracking:** Scheduled → In Progress → Completed workflow
+- **Status Tracking:** Scheduled → InProgress → Completed workflow
 - **Cost Management:** Track treatment costs and revenue
 
 ### Calendar View

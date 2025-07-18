@@ -20,11 +20,11 @@ const formats: Formats = {
   eventTimeRangeFormat: ({ start }) => format(start, 'h:mm a')
 };
 
-type StatusType = 'Scheduled' | 'In Progress' | 'Completed' | 'Cancelled';
+type StatusType = 'Scheduled' | 'InProgress' | 'Completed' | 'Cancelled';
 
 const map: Record<StatusType, [string, string, string]> = {
   Scheduled: ['#DBEAFE', '#BFDBFE', '#1E3A8A'],
-  'In Progress': ['#FEF3C7', '#FDE68A', '#92400E'],
+  'InProgress': ['#FEF3C7', '#FDE68A', '#92400E'],
   Completed: ['#DCFCE7', '#A7F3D0', '#166534'],
   Cancelled: ['#FEE2E2', '#FECACA', '#991B1B']
 };
@@ -229,7 +229,7 @@ const CalendarView: React.FC = () => {
               <div className="flex justify-between"><span>Total Appointments</span><span className="font-semibold">{monthlyAppointments.length}</span></div>
               <div className="flex justify-between"><span>Completed</span><span className="font-semibold text-green-600">{monthlyAppointments.filter(a => a.status === 'Completed').length}</span></div>
               <div className="flex justify-between"><span>Scheduled</span><span className="font-semibold text-blue-600">{monthlyAppointments.filter(a => a.status === 'Scheduled').length}</span></div>
-              <div className="flex justify-between"><span>In Progress</span><span className="font-semibold text-yellow-600">{monthlyAppointments.filter(a => a.status === 'In Progress').length}</span></div>
+              <div className="flex justify-between"><span>InProgress</span><span className="font-semibold text-yellow-600">{monthlyAppointments.filter(a => a.status === 'InProgress').length}</span></div>
             </div>
           </div>
         </div>

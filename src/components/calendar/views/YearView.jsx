@@ -1,3 +1,4 @@
+// YearView.jsx
 import React, { useState } from "react";
 import dayjs from "dayjs";
 
@@ -15,7 +16,7 @@ const getFormattedTimeRange = (ev) => {
   return ev.duration || ""; 
 };
 
-const YearView = ({ currentDate, events }) => {
+const YearView = ({ currentDate, appointments }) => {
   const year = currentDate.year();
   const today = dayjs();
   const [hovered, setHovered] = useState(null);
@@ -50,7 +51,7 @@ const YearView = ({ currentDate, events }) => {
 
                 {Array.from({ length: daysInMonth }, (_, dayIdx) => {
                   const dateObj = monthDate.date(dayIdx + 1);
-                  const cellEvents = events.filter((e) =>
+                  const cellappointments = appointments.filter((e) =>
                     dayjs(e.date).isSame(dateObj, "day")
                   );
                   const isToday = dateObj.isSame(today, "day");
@@ -64,7 +65,7 @@ const YearView = ({ currentDate, events }) => {
                         setHovered({
                           id,
                           date: dateObj.format("MMM D, YYYY"),
-                          events: cellEvents,
+                          appointments: cellappointments,
                         })
                       }
                       onMouseLeave={() => setHovered(null)}
@@ -74,12 +75,12 @@ const YearView = ({ currentDate, events }) => {
                         style={{
                           backgroundColor: isToday
                             ? "#ef4444"
-                            : cellEvents.length
-                            ? cellEvents[0]?.color
+                            : cellappointments.length
+                            ? cellappointments[0]?.color
                             : "transparent",
                           color: isToday
                             ? "#fff"
-                            : cellEvents.length
+                            : cellappointments.length
                             ? "#fff"
                             : "#000",
                         }}
@@ -94,17 +95,17 @@ const YearView = ({ currentDate, events }) => {
                               ? "bottom-8 left-full ml-2"
                               : "top-8 left-1/2 -translate-x-1/2"
                           } w-48 bg-white border border-gray-300 rounded shadow text-xs p-2
-                            opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`}
+                            opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-appointments-none`}
                         >
                           <div className="font-semibold mb-1 text-center">
                             {hovered.date}
                           </div>
-                          {hovered.events.length === 0 ? (
+                          {hovered.appointments.length === 0 ? (
                             <div className="text-center italic text-gray-400">
-                              No events
+                              No appointments
                             </div>
                           ) : (
-                            hovered.events.map((ev, i) => (
+                            hovered.appointments.map((ev, i) => (
                               <div key={i} className="mb-1">
                                 <div className="text-gray-900 font-medium">{ev.title}</div>
                                 <div className="text-gray-500">
