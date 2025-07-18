@@ -77,6 +77,7 @@ export interface AppContextType {
     sort: string
   ) => void;
 
+  getAppointmentsForCalendarRange: (start: Date, end: Date) => Promise<Appointment[]>;
   getAppointmentsForMonth: (startDate: Date, endDate: Date) => void;
   getAppointmentsForWeek: (startDate: Date, endDate: Date) => void;
 

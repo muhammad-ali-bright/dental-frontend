@@ -8,11 +8,12 @@ import YearView from "../views/YearView";
 const CalendarViewRenderer = ({
   view,
   currentDate,
-  events,
+  appointments,
   handleRC,
   handleEdit,
   onEventClick,
 }) => {
+  console.log(appointments);
   const variants = {
     initial: { opacity: 0, x: 50 },
     animate: { opacity: 1, x: 0 },
@@ -32,10 +33,10 @@ const CalendarViewRenderer = ({
         >
           <DayView
             currentDate={currentDate}
-            events={events}
+            appointments={appointments}
             onRightClick={handleRC}
             onEdit={handleEdit}
-            onEventClick={onEventClick} 
+            onEventClick={onEventClick}
           />
         </motion.div>
       )}
@@ -51,7 +52,7 @@ const CalendarViewRenderer = ({
         >
           <WeekView
             currentDate={currentDate}
-            events={events}
+            appointments={appointments}
             onRightClick={handleRC}
             onEdit={handleEdit}
             onEventClick={onEventClick}
@@ -69,7 +70,7 @@ const CalendarViewRenderer = ({
         >
           <MonthView
             currentDate={currentDate}
-            events={events}
+            appointments={appointments}
             onRightClick={handleRC}
             onEventClick={onEventClick}
           />
@@ -85,7 +86,7 @@ const CalendarViewRenderer = ({
           exit="exit"
           className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
         >
-          <YearView currentDate={currentDate} events={events} />
+          <YearView currentDate={currentDate} appointments={appointments} />
         </motion.div>
       )}
     </AnimatePresence>

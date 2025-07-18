@@ -13,6 +13,7 @@ import {
   getAppointmentsByDateFromAPI,
   updateAppointmentFromAPI,
   getAppointmentsFromAPI,
+  getAppointmentsForCalendar,
   deleteAppointmentFromAPI,
 } from '../utils/api';
 
@@ -76,6 +77,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setTotalCountAppointments(totalCount);
   };
 
+  const getAppointmentsForCalendarRange = async (start: Date, end: Date) => {
+    const appointments = await getAppointmentsForCalendar(start, end);
+    // you could also set `appointments` if needed globally
+    return appointments;
+  };
+
   const getAppointmentsForMonth = async (startDate: Date, endDate: Date) => {
     const appointments = await getAppointmentsByDateFromAPI(startDate, endDate);
     setAppointmentsForMonth(appointments); // ✅ Now this matches Appointment[]
@@ -107,6 +114,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     totalCountPatients,
     getPatientNames,
     getPatients,
+    getAppointmentsForCalendarRange,
     appointments,
     appointmentsForMonth,
     appointmentsForWeek,

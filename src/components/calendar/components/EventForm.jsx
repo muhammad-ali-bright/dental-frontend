@@ -14,13 +14,13 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
   const [customColor, setCustomColor] = useState(form.color || "#a855f7");
   const [showColorPicker, setShowColorPicker] = useState(false);
 
-  const { patientNames } = useApp();
-  console.log(patientNames);
+  const { patientNames, getPatientNames } = useApp();
 
   useEffect(() => {
     if (!form.color) {
       setForm({ ...form, color: customColor });
     }
+    getPatientNames();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -122,8 +122,8 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
       {/* Student */}
       <label className="text-sm font-medium text-gray-700">Patient</label>
       <select
-        value={form.patient || ""}
-        onChange={(e) => setForm({ ...form, patient: e.target.value })}
+        value={form.patientId || ""}
+        onChange={(e) => setForm({ ...form, patientId: e.target.value })}
         className="w-full border border-gray-300 px-3 py-2 mb-4 rounded-md text-sm focus:ring-2 focus:ring-blue-200"
       >
         <option value="">Select a patient</option>
@@ -176,7 +176,7 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="w-3.5 h-3.5 text-white pointer-events-none"
+              className="w-3.5 h-3.5 text-white pointer-appointments-none"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

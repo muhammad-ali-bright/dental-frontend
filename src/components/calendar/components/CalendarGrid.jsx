@@ -8,25 +8,27 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 const CalendarGrid = ({
-  events,
-  setEvents,
+  appointments,
+  setAppointments,
   currentDate,
   setCurrentDate,
   view,
   setView,
-  setSelectedDate,
+  addEvent,
+  updateEvent,
+  deleteEvent,
 }) => {
   const [editingEvent, setEditingEvent] = useState(null);
   const [modal, setModal] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [form, setForm] = useState({
     title: "",
-    date: "", // renamed from 'date'
+    date: "",
     startTime: "",
     endTime: "",
     description: "",
-    patient: "",
-    status: "Scheduled", // default status
+    patientId: "",
+    status: "Scheduled",
   });
 
   const isFirstLoad = useRef(true);
@@ -38,7 +40,7 @@ const CalendarGrid = ({
       return;
     }
     if (!dayjs(currentDate).isSame(prevDateRef.current, "day")) {
-      setView(view); // trigger refresh
+      setView(view); // triggers re-render
     }
     prevDateRef.current = currentDate;
   }, [currentDate]);
@@ -56,11 +58,9 @@ const CalendarGrid = ({
       startTime: `${hour.toString().padStart(2, "0")}:00`,
       endTime: `${(hour + 1).toString().padStart(2, "0")}:00`,
       description: "",
-      patient: "",
+      patientId: "",
       status: "Scheduled",
     });
-
-    if (setSelectedDate) setSelectedDate(day.toDate ? day.toDate() : new Date(date));
   };
 
   const handleEdit = (event) => {
@@ -71,7 +71,7 @@ const CalendarGrid = ({
       startTime: event.startTime,
       endTime: event.endTime,
       description: event.description || "",
-      patient: event.patient || "",
+      patientId: event.patientId || "",
       status: event.status || "Scheduled",
       color: event.color || "#2196f3",
     });
@@ -79,8 +79,8 @@ const CalendarGrid = ({
     setSelectedEvent(null);
   };
 
-  const handleDelete = (event) => {
-    setEvents((prev) => prev.filter((ev) => ev !== event));
+  const handleDelete = async (event) => {
+    await deleteEvent(event.id); // ✅ backend call
     setSelectedEvent(null);
   };
 
@@ -94,58 +94,52 @@ const CalendarGrid = ({
       startTime: "",
       endTime: "",
       description: "",
-      patient: "",
+      patientId: "",
       status: "Scheduled",
     });
   };
 
-  const saveEv = () => {
+  const saveEv = async () => {
     const newAppointment = {
-      id: editingEvent?.id || Date.now().toString(),
+      id: editingEvent?.id || undefined,
       title: form.title,
       date: form.date,
       startTime: form.startTime,
       endTime: form.endTime,
       description: form.description,
-      patient: form.patient,
+      patientId: form.patientId,
       status: form.status || "Scheduled",
-      color: form.color || "#a855f7", // ← ✅ Add this line
+      color: form.color || "#a855f7",
     };
 
     if (editingEvent) {
-      setEvents((prev) =>
-        prev.map((ev) => (ev.id === editingEvent.id ? newAppointment : ev))
-      );
+      await updateEvent(editingEvent.id, newAppointment); // ✅ backend update
     } else {
-      setEvents((prev) => [...prev, newAppointment]);
+      await addEvent(newAppointment); // ✅ backend create
     }
 
     closeForm();
   };
 
-
   return (
     <div className="flex-1 bg-white relative p-4">
-      {/* Header */}
       <CalendarHeader
         currentDate={currentDate}
         setCurrentDate={setCurrentDate}
         view={view}
         setView={setView}
-        setEvents={setEvents}
+        setAppointments={setAppointments}
       />
 
-      {/* View Renderer */}
       <CalendarViewRenderer
         view={view}
         currentDate={currentDate}
-        events={events}
+        appointments={appointments}
         handleRC={handleRC}
         handleEdit={handleEdit}
         onEventClick={setSelectedEvent}
       />
 
-      {/* Modal Form */}
       {modal && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <EventForm
@@ -158,7 +152,6 @@ const CalendarGrid = ({
         </div>
       )}
 
-      {/* Mini Event Info Popup */}
       {selectedEvent && (
         <div className="fixed top-[20%] left-1/2 transform -translate-x-1/2 bg-white shadow-2xl border border-gray-200 rounded-xl p-5 w-72 z-50">
           <div className="flex justify-between items-center mb-2">
@@ -194,13 +187,15 @@ const CalendarGrid = ({
 };
 
 CalendarGrid.propTypes = {
-  events: PropTypes.array.isRequired,
-  setEvents: PropTypes.func.isRequired,
-  currentDate: PropTypes.any.isRequired, // or PropTypes.instanceOf(Date) if Date obj
+  appointments: PropTypes.array.isRequired,
+  setAppointments: PropTypes.func.isRequired,
+  currentDate: PropTypes.any.isRequired,
   setCurrentDate: PropTypes.func.isRequired,
   view: PropTypes.string.isRequired,
   setView: PropTypes.func.isRequired,
-  setSelectedDate: PropTypes.func,
+  addEvent: PropTypes.func.isRequired,
+  updateEvent: PropTypes.func.isRequired,
+  deleteEvent: PropTypes.func.isRequired,
 };
 
 export default CalendarGrid;

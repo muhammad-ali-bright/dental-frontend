@@ -8,7 +8,7 @@ const CalendarHeader = ({
   view,
   setView,
   setSelectedDate,
-  setEvents,
+  setAppointments,
 }) => {
   const goToToday = () => {
     const today = dayjs();
@@ -38,34 +38,6 @@ const CalendarHeader = ({
         return currentDate.format("YYYY");
       default:
         return "";
-    }
-  };
-
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const text = await file.text();
-    try {
-      const json = JSON.parse(text);
-      const parsed = json.map((ev) => {
-        const [sh, sm] = ev.startTime.split(":").map(Number);
-        const [eh, em] = ev.endTime.split(":").map(Number);
-        return {
-          ...ev,
-          date: dayjs().format("YYYY-MM-DD"),
-          startHour: sh,
-          startMinute: sm,
-          endHour: eh,
-          endMinute: em,
-          duration: `${ev.startTime} - ${ev.endTime}`,
-        };
-      });
-
-      setEvents((prev) => [...prev, ...parsed]);
-    } catch (err) {
-      alert("⚠️ Invalid JSON format.");
-      console.error(err);
     }
   };
 
@@ -116,19 +88,6 @@ const CalendarHeader = ({
         ))}
       </div>
 
-      {/* Right: Upload Button */}
-      <div className="z-10 flex justify-end">
-        <label className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white text-sm px-4 py-1.5 rounded-full shadow-md cursor-pointer transition">
-          <CloudUploadIcon style={{ fontSize: "18px" }} />
-          Upload JSON
-          <input
-            type="file"
-            accept=".json"
-            className="hidden"
-            onChange={handleFileUpload}
-          />
-        </label>
-      </div>
     </div>
   );
 };

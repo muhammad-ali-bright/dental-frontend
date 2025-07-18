@@ -1,16 +1,16 @@
 import React from "react";
 import dayjs from "dayjs";
 
-const EventList = ({ events, selectedDate }) => {
+const EventList = ({ appointments, selectedDate }) => {
   const today = dayjs();
   const tomorrow = today.add(1, "day");
 
   const isSameDay = (date1, date2) =>
     dayjs(date1).isValid() && dayjs(date1).isSame(date2, "day");
 
-  const todayEvents = events.filter((e) => isSameDay(e.date, today));
-  const tomorrowEvents = events.filter((e) => isSameDay(e.date, tomorrow));
-  const upcomingEvents = events.filter((e) =>
+  const todayEvents = appointments.filter((e) => isSameDay(e.date, today));
+  const tomorrowEvents = appointments.filter((e) => isSameDay(e.date, tomorrow));
+  const upcomingEvents = appointments.filter((e) =>
     dayjs(e.date).isAfter(tomorrow, "day")
   );
 

@@ -4,7 +4,7 @@ import MiniCalendar from "./MiniCalendar";
 import EventList from "./EventList";
 import EventForm from "../EventForm";
 
-const Sidebar = ({ events, setEvents, setCurrentDate, currentDate, setView }) => {
+const Sidebar = ({ appointments, setAppointments, setCurrentDate, currentDate, setView }) => {
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [showForm, setShowForm] = useState(false);
 
@@ -46,7 +46,7 @@ const Sidebar = ({ events, setEvents, setCurrentDate, currentDate, setView }) =>
       endMinute: em,
     };
 
-    setEvents((prev) => [...prev, newEvent]);
+    setAppointments((prev) => [...prev, newEvent]);
     setShowForm(false);
     resetForm();
   };
@@ -70,12 +70,12 @@ const Sidebar = ({ events, setEvents, setCurrentDate, currentDate, setView }) =>
       />
 
       {/* Event List */}
-      <EventList events={events} selectedDate={selectedDate} />
+      <EventList appointments={appointments} selectedDate={selectedDate} />
 
       {/* Modal Form - No overlay background */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-          <div className="pointer-events-auto bg-white text-black rounded-xl shadow-2xl w-[400px] max-w-full p-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-appointments-none">
+          <div className="pointer-appointments-auto bg-white text-black rounded-xl shadow-2xl w-[400px] max-w-full p-5">
             <EventForm
               modal={{ position: "center" }}
               form={form}

@@ -20,6 +20,19 @@ export const getAppointmentsFromAPI = async (
     return data;
 };
 
+export const getAppointmentsForCalendar = async (
+    startDate: Date,
+    endDate: Date
+): Promise<Appointment[]> => {
+    const res = await API.get<Appointment[]>('/appointments/dateRange', {
+        params: {
+            startDate: startDate.toISOString(),
+            endDate: endDate.toISOString(),
+        },
+    });
+    return res.data;
+};
+
 export const getAppointmentsByDateFromAPI = async (
     startDate: Date,
     endDate: Date
