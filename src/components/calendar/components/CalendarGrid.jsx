@@ -93,10 +93,7 @@ const CalendarGrid = ({
     const end = start.add(30, "minute");
 
     // Helper: drop “:00” when minutes === 0
-    const fmt = t =>
-      t.minute() === 0
-        ? t.format("h A")
-        : t.format("h:mm A");
+    const fmt = t => t.format("hh:mm A");
 
     setForm({
       title: "",

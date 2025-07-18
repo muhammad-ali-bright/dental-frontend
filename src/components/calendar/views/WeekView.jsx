@@ -2,8 +2,16 @@
 import React from "react";
 import dayjs from "dayjs";
 
+const parseTime = (t) => {
+  const [time, meridiem] = t.split(" ");      // ["05:00","PM"]
+  let [h, m] = time.split(":").map(Number);   // [5, 0]
+  if (meridiem === "PM" && h < 12) h += 12;
+  if (meridiem === "AM" && h === 12) h = 0;
+  return { h, m };
+};
+
 const formatTime12 = (t) => {
-  const [h, m] = t.split(":").map(Number);
+  const { h, m } = parseTime(t);
   const isPM = h >= 12;
   const displayHour = h % 12 || 12;
   return `${displayHour}:${m.toString().padStart(2, "0")} ${isPM ? "PM" : "AM"}`;
@@ -48,16 +56,18 @@ const WeekView = ({ currentDate, appointments = [], onRightClick, onEventClick }
 
           {/* Day Columns */}
           {days.map((d, di) => {
-            const dayappointments = appointments.filter((e) =>
-              dayjs(e.date).isSame(d, "day")
+            const dayAppointments = appointments.filter((e) =>
+              // compare YYYY-MM-DD strings so timezones don’t shift the day
+              dayjs(e.date).format("YYYY-MM-DD") === d.format("YYYY-MM-DD")
             );
 
             const timeBuckets = {};
-            dayappointments.forEach((e) => {
+            dayAppointments.forEach((e) => {
               const key = `${e.startTime}-${e.endTime}`;
               if (!timeBuckets[key]) timeBuckets[key] = [];
               timeBuckets[key].push(e);
             });
+
 
             return (
               <div
@@ -70,7 +80,7 @@ const WeekView = ({ currentDate, appointments = [], onRightClick, onEventClick }
                   <div
                     key={hi}
                     className="h-16 border-t border-gray-200 hover:bg-gray-100 cursor-pointer transition"
-                    onContextMenu={(e) => onRightClick(e, d, h)}
+                    // onContextMenu={(e) => onRightClick(e, d, h)}
                     onClick={(e) => {
                       onRightClick(e, d, h)
                     }
@@ -81,11 +91,10 @@ const WeekView = ({ currentDate, appointments = [], onRightClick, onEventClick }
                 {/* appointments */}
                 {Object.entries(timeBuckets).map(([key, group], idx) => {
                   const [startTime, endTime] = key.split("-");
-                  const [sh, sm] = startTime.split(":").map(Number);
-                  const [eh, em] = endTime.split(":").map(Number);
+                  const { h: sh, m: sm } = parseTime(startTime);
+                  const { h: eh, m: em } = parseTime(endTime);
                   const top = (sh + sm / 60) * 4;
                   const height = (eh + em / 60 - sh - sm / 60) * 4;
-
                   return group.map((ev, j) => {
                     const width = 100 / group.length;
                     const left = j * width;
@@ -103,7 +112,7 @@ const WeekView = ({ currentDate, appointments = [], onRightClick, onEventClick }
                           left: `${left}%`,
                           backgroundColor: `${ev.color}20`,
                           borderLeft: `4px solid ${ev.color}`,
-                          color: "#0f172a",
+                          color: "black",
                         }}
                         title={`${ev.title} (${formatTime12(
                           ev.startTime

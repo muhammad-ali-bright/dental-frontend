@@ -12,15 +12,13 @@ const EventForm = ({ modal, form = {}, setForm, onSave, onClose }) => {
         const t = new Date();
         t.setHours(hour, min, 0, 0);
         // Match fmt(): “5 PM” if min===0, else “5:30 PM”
-        const label =
-          t.getMinutes() === 0
-            ? t.toLocaleTimeString([], { hour: "numeric", hour12: true })
-            : t.toLocaleTimeString([], {
-              hour: "numeric",
-              minute: "2-digit",
-              hour12: true,
-            });
-        options.push(label);
+        options.push(
+          t.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          })
+        );
       }
     }
     return options;
