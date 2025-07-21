@@ -32,7 +32,7 @@ const Login: React.FC = () => {
   useEffect(() => {
     if (isAuthenticated && user) {
       hasShownSuccessToast.current = true;
-      const redirectPath = user.role === 'Student' ? '/dashboard' : '/patient-dashboard';
+      const redirectPath = '/dashboard';
       setTimeout(() => navigate(redirectPath, { replace: true }), 1000);
     }
   }, [isAuthenticated, user, navigate]);

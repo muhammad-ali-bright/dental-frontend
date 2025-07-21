@@ -1,6 +1,7 @@
 // src/pages/Patients.tsx
 import React, { useEffect, useMemo, useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import { Plus, Search } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import { Patient } from '../types';
@@ -19,6 +20,8 @@ const Patients: React.FC = () => {
     updatePatient,
     deletePatient,
   } = useApp();
+
+  const { user } = useAuth();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -129,13 +132,15 @@ const Patients: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900">Patients</h1>
           <p className="text-gray-600">Manage your patient records</p>
         </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
-        >
-          <Plus size={20} />
-          <span>Add Patient</span>
-        </button>
+        {
+          user?.role == "Student" && <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+          >
+            <Plus size={20} />
+            <span>Add Patient</span>
+          </button>
+        }
       </div>
 
       {/* Search */}

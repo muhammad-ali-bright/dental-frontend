@@ -49,17 +49,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
     const navItems = useMemo(() => {
         if (!user) return [];
-        return user.role === 'Student'
-            ? [
-                { path: '/dashboard', label: 'Dashboard', icon: Home },
-                { path: '/patients', label: 'Patients', icon: Users },
-                { path: '/appointments', label: 'Appointments', icon: FileText },
-                { path: '/calendar', label: 'Calendar', icon: CalendarIcon }
-            ]
-            : [
-                { path: '/patient-dashboard', label: 'My Dashboard', icon: Home },
-                { path: '/my-appointments', label: 'My Appointments', icon: FileText }
-            ];
+        return [
+            { path: '/dashboard', label: 'Dashboard', icon: Home },
+            { path: '/patients', label: 'Patients', icon: Users },
+            { path: '/appointments', label: 'Appointments', icon: FileText },
+            { path: '/calendar', label: 'Calendar', icon: CalendarIcon }
+        ]
     }, [user]);
 
     const isActive = useCallback(
@@ -94,7 +89,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             ${collapsed ? 'w-20' : 'w-64 lg:w-72'}
             bg-white shadow-lg h-full
             transition-all duration-300 ease-in-out
-          `}
+                `}
                 >
                     {/* Collapse Toggle */}
                     <div className="absolute top-4 -right-3 hidden lg:block">

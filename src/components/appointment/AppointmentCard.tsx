@@ -13,6 +13,7 @@ import {
     XCircle,
 } from 'lucide-react';
 import { statusColorClasses } from '../../utils/status';
+import { useAuth } from '../../context/AuthContext';
 
 interface Props {
     appointment: Appointment;
@@ -44,13 +45,14 @@ const AppointmentCard: React.FC<Props> = ({
     onDelete,
     onStatusClick,
 }) => {
+    const { user } = useAuth();
     return (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 transition hover:shadow-md">
             <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
                         <h3 className="text-lg font-semibold text-gray-900">{appointment.title}</h3>
-                        <button
+                        {user?.role == "Student" && <button
                             onClick={onStatusClick}
                             className={`
                 flex items-center space-x-1
@@ -61,7 +63,18 @@ const AppointmentCard: React.FC<Props> = ({
                         >
                             {getStatusIcon(appointment.status)}
                             <span>{appointment.status}</span>
-                        </button>
+                        </button>}
+                        {user?.role == "Professor" && <button
+                            className={`
+                flex items-center space-x-1
+                px-3 py-1 rounded-full text-sm font-medium
+                ${statusColorClasses[appointment.status]}
+              `}
+                        >
+                            {getStatusIcon(appointment.status)}
+                            <span>{appointment.status}</span>
+                        </button>}
+
                     </div>
                     <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                         <div className="flex items-center space-x-1">
@@ -78,7 +91,7 @@ const AppointmentCard: React.FC<Props> = ({
                         </div>
                     </div>
                 </div>
-                <div className="flex space-x-2">
+                {user?.role == "Student" && <div className="flex space-x-2">
                     <button
                         onClick={onEdit}
                         className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -93,7 +106,7 @@ const AppointmentCard: React.FC<Props> = ({
                     >
                         <Trash2 size={16} />
                     </button>
-                </div>
+                </div>}
             </div>
             <p className="text-sm font-medium text-gray-700 mb-1">Description</p>
             <p className="text-sm text-gray-600 whitespace-pre-line break-words">

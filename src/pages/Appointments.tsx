@@ -1,6 +1,7 @@
 // src/pages/Appointments.tsx
 import React, { useEffect, useMemo, useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import {
   Plus,
   Search,
@@ -30,6 +31,7 @@ const Appointments: React.FC = () => {
     deleteAppointment,
     getPatientNames,
   } = useApp();
+  const { user } = useAuth();
 
   // Pagination & filters
   const [currentPage, setCurrentPage] = useState(1);
@@ -83,7 +85,7 @@ const Appointments: React.FC = () => {
   // Open add modal
   const openAddModal = () => {
     setEditingAppointment(null);
-    setFormData({ id: '', patientId: '', title: '', description: '', date: '', status: 'Scheduled', startTime:'', endTime: '' });
+    setFormData({ id: '', patientId: '', title: '', description: '', date: '', status: 'Scheduled', startTime: '', endTime: '' });
     setShowModal(true);
   };
 
@@ -174,13 +176,14 @@ const Appointments: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900">Appointments</h1>
           <p className="text-gray-600">Manage patient appointments and treatments</p>
         </div>
-        <button
+        {user?.role == "Student" && <button
           onClick={openAddModal}
           className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
         >
           <Plus size={20} />
           <span>Add Appointment</span>
-        </button>
+        </button>}
+
       </div>
 
       {/* Search & Filter */}

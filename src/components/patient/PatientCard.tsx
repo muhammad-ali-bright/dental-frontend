@@ -2,7 +2,7 @@
 import React from 'react';
 import { Edit, Mail, Phone, Trash2, User, Heart } from 'lucide-react';
 import { Patient, Appointment } from '../../types';
-
+import { useAuth } from '../../context/AuthContext';
 interface Props {
   patient: Patient;
   appointments: Appointment[];
@@ -11,6 +11,7 @@ interface Props {
 }
 
 const PatientCard: React.FC<Props> = ({ patient, appointments, onEdit, onDelete }) => {
+  const { user } = useAuth();
   const patientAppointments = appointments.filter(a => a.patientId === patient.id);
   const completed = patientAppointments.filter(a => a.status === 'Completed').length;
   const upcoming = patientAppointments.filter(
@@ -26,7 +27,7 @@ const PatientCard: React.FC<Props> = ({ patient, appointments, onEdit, onDelete 
           </div>
           <h3 className="font-semibold text-gray-900 text-lg">{patient.name}</h3>
         </div>
-        <div className="flex space-x-2">
+        {user?.role == "Student" && <div className="flex space-x-2">
           <button
             onClick={() => onEdit(patient)}
             className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
@@ -39,9 +40,8 @@ const PatientCard: React.FC<Props> = ({ patient, appointments, onEdit, onDelete 
           >
             <Trash2 size={16} />
           </button>
-        </div>
+        </div>}
       </div>
-
       <div className="space-y-2 mb-2 text-sm text-gray-600">
         {patient.email && (
           <div className="flex items-center gap-2">
